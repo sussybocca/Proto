@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar World - Create Custom 3D Worlds</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6a5acd;
+            --primary-dark: #5a4acd;
+            --secondary: #ff7f50;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Header Styles */
+        .app-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(26, 26, 46, 0.9);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            color: var(--secondary);
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .user-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--darker);
+            color: white;
+            border: 1px solid var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--darker);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 70px;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-title i {
+            font-size: 1rem;
+        }
+
+        /* Block Palette */
+        .block-palette {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .block-item {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .block-item:hover {
+            transform: scale(1.05);
+        }
+
+        /* Avatar Customization */
+        .avatar-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .avatar-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slider-container {
+            width: 60%;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--gray);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-top: 70px;
+        }
+
+        .tab-container {
+            display: flex;
+            background-color: var(--darker);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--secondary);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        /* 3D Editor Container */
+        .editor-container {
+            flex: 1;
+            position: relative;
+            background-color: #0f1123;
+            overflow: hidden;
+        }
+
+        #world-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .editor-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            background: rgba(26, 26, 46, 0.8);
+            padding: 12px 20px;
+            border-radius: 30px;
+        }
+
+        .editor-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--darker);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .editor-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .editor-btn.active {
+            background: var(--primary);
+        }
+
+        /* Code Editor */
+        .code-editor-container {
+            display: none;
+            flex: 1;
+            background-color: #1e1e1e;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .code-editor-container.active {
+            display: flex;
+        }
+
+        .code-toolbar {
+            padding: 10px 15px;
+            background-color: #252526;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-language {
+            color: var(--light);
+            font-weight: 600;
+        }
+
+        #code-editor {
+            flex: 1;
+            border: none;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            padding: 20px;
+            resize: none;
+            outline: none;
+        }
+
+        /* Avatar Preview */
+        .avatar-preview-container {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--dark), var(--darker));
+        }
+
+        .avatar-preview-container.active {
+            display: flex;
+        }
+
+        .avatar-display {
+            width: 300px;
+            height: 400px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-model {
+            font-size: 10rem;
+            color: var(--primary);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* World List */
+        .worlds-container {
+            display: none;
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: var(--darker);
+        }
+
+        .worlds-container.active {
+            display: block;
+        }
+
+        .worlds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .world-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .world-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .world-thumbnail {
+            height: 150px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .world-info {
+            padding: 15px;
+        }
+
+        .world-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .world-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .sidebar {
+                width: 230px;
+            }
+            
+            .block-palette {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-top: 60px;
+                padding: 10px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .sidebar-section {
+                flex: 1;
+                min-width: 150px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-cube logo-icon"></i>
+                <h1>Avatar World</h1>
+            </div>
+            <div class="user-controls">
+                <button class="btn btn-secondary" id="save-world-btn">
+                    <i class="fas fa-save"></i> Save World
+                </button>
+                <button class="btn btn-primary" id="run-script-btn">
+                    <i class="fas fa-play"></i> Run Script
+                </button>
+                <button class="btn btn-success" id="new-world-btn">
+                    <i class="fas fa-plus"></i> New World
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title"><i class="fas fa-cubes"></i> Block Palette</h3>
+                <div class="block-palette" id="block-palette">
+                    <!-- Blocks will be generated here -->
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title"><i class="fas fa-user-astronaut"></i> Avatar Customization</h3>
+                <div class="avatar-options">
+                    <div class="avatar-option">
+                        <span>Size</span>
+                        <div class="slider-container">
+                            <input type="range" min="50" max="200" value="100" class="slider" id="avatar-size">
+                        </div>
+                    </div>
+                    <div class="avatar-option">
+                        <span>Color</span>
+                        <div class="slider-container">
+                            <input type="color" id="avatar-color" value="#6a5acd">
+                        </div>
+                    </div>
+                    <div class="avatar-option">
+                        <span>Style</span>
+                        <select id="avatar-style">
+                            <option value="humanoid">Humanoid</option>
+                            <option value="robot">Robot</option>
+                            <option value="animal">Animal</option>
+                            <option value="fantasy">Fantasy</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title"><i class="fas fa-code"></i> Script Examples</h3>
+                <div class="script-examples">
+                    <button class="btn btn-secondary script-example-btn" data-script="move">Move Block</button>
+                    <button class="btn btn-secondary script-example-btn" data-script="color">Change Color</button>
+                    <button class="btn btn-secondary script-example-btn" data-script="rotate">Rotate Objects</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab active" data-tab="world-editor">
+                    <i class="fas fa-globe"></i> 3D World Editor
+                </div>
+                <div class="tab" data-tab="code-editor">
+                    <i class="fas fa-code"></i> Code Editor
+                </div>
+                <div class="tab" data-tab="avatar-preview">
+                    <i class="fas fa-user"></i> Avatar Preview
+                </div>
+                <div class="tab" data-tab="worlds">
+                    <i class="fas fa-th-large"></i> My Worlds
+                </div>
+            </div>
+
+            <!-- 3D World Editor -->
+            <div class="editor-container" id="world-editor">
+                <canvas id="world-canvas"></canvas>
+                <div class="editor-controls">
+                    <button class="editor-btn active" id="add-btn" title="Add Block">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="editor-btn" id="delete-btn" title="Delete Block">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="editor-btn" id="move-btn" title="Move Block">
+                        <i class="fas fa-arrows-alt"></i>
+                    </button>
+                    <button class="editor-btn" id="paint-btn" title="Paint Block">
+                        <i class="fas fa-fill-drip"></i>
+                    </button>
+                    <button class="editor-btn" id="rotate-btn" title="Rotate View">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="code-editor-container" id="code-editor-tab">
+                <div class="code-toolbar">
+                    <div class="code-language">
+                        <i class="fab fa-js-square"></i> JavaScript
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" id="execute-code-btn">
+                            <i class="fas fa-play"></i> Execute Code
+                        </button>
+                    </div>
+                </div>
+                <textarea id="code-editor" placeholder="// Write your JavaScript code here
+// Example: Move a block
+// world.moveBlock(blockId, x, y, z);">// Welcome to Avatar World Scripting!
+// You can control the world with JavaScript
+
+// Example: Create a new block
+// world.addBlock('grass', 0, 0, 0);
+
+// Example: Change block color
+// world.changeBlockColor(blockId, '#FF5733');
+
+// Example: Move avatar
+// avatar.moveTo(x, y, z);
+
+console.log('Ready to script your world!');</textarea>
+            </div>
+
+            <!-- Avatar Preview -->
+            <div class="avatar-preview-container" id="avatar-preview-tab">
+                <div class="avatar-display">
+                    <div class="avatar-model" id="avatar-model">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+                <h2>Your Custom Avatar</h2>
+                <p>Adjust settings in the sidebar to customize your avatar</p>
+            </div>
+
+            <!-- My Worlds -->
+            <div class="worlds-container" id="worlds-tab">
+                <h2>My Avatar Worlds</h2>
+                <p>Here are the worlds you've created. Click to edit or play.</p>
+                <div class="worlds-grid" id="worlds-grid">
+                    <!-- World cards will be generated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = {
+                'world-editor': document.getElementById('world-editor'),
+                'code-editor': document.getElementById('code-editor-tab'),
+                'avatar-preview': document.getElementById('avatar-preview-tab'),
+                'worlds': document.getElementById('worlds-tab')
+            };
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Hide all tab contents
+                    Object.values(tabContents).forEach(content => {
+                        content.classList.remove('active');
+                        if(content.classList.contains('code-editor-container')) {
+                            content.style.display = 'none';
+                        }
+                    });
+                    
+                    // Activate clicked tab
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Show corresponding content
+                    if(tabContents[tabId]) {
+                        tabContents[tabId].classList.add('active');
+                        if(tabContents[tabId].classList.contains('code-editor-container')) {
+                            tabContents[tabId].style.display = 'flex';
+                        }
+                    }
+                });
+            });
+
+            // Initialize block palette
+            const blockPalette = document.getElementById('block-palette');
+            const blockTypes = [
+                {name: 'Grass', color: '#7CFC00', icon: 'fa-leaf'},
+                {name: 'Stone', color: '#808080', icon: 'fa-hill-rockslide'},
+                {name: 'Wood', color: '#8B4513', icon: 'fa-tree'},
+                {name: 'Water', color: '#1E90FF', icon: 'fa-water'},
+                {name: 'Glass', color: '#87CEEB', icon: 'fa-square'},
+                {name: 'Lava', color: '#FF4500', icon: 'fa-fire'},
+                {name: 'Gold', color: '#FFD700', icon: 'fa-gem'},
+                {name: 'Diamond', color: '#00FFFF', icon: 'fa-gem'},
+                {name: 'Dirt', color: '#8B7355', icon: 'fa-mound'}
+            ];
+
+            blockTypes.forEach((block, index) => {
+                const blockItem = document.createElement('div');
+                blockItem.className = 'block-item';
+                blockItem.setAttribute('data-block-type', block.name.toLowerCase());
+                blockItem.setAttribute('draggable', 'true');
+                blockItem.style.backgroundColor = block.color;
+                blockItem.innerHTML = `<i class="fas ${block.icon}"></i>`;
+                blockItem.title = block.name;
+                
+                // Add drag and drop functionality
+                blockItem.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('blockType', block.name.toLowerCase());
+                    e.dataTransfer.setData('blockColor', block.color);
+                });
+                
+                blockPalette.appendChild(blockItem);
+            });
+
+            // Avatar customization
+            const avatarSize = document.getElementById('avatar-size');
+            const avatarColor = document.getElementById('avatar-color');
+            const avatarStyle = document.getElementById('avatar-style');
+            const avatarModel = document.getElementById('avatar-model');
+
+            avatarSize.addEventListener('input', () => {
+                const size = avatarSize.value;
+                avatarModel.style.fontSize = `${size/10}rem`;
+            });
+
+            avatarColor.addEventListener('input', () => {
+                avatarModel.style.color = avatarColor.value;
+            });
+
+            avatarStyle.addEventListener('change', () => {
+                const style = avatarStyle.value;
+                const icons = {
+                    'humanoid': 'fa-user-astronaut',
+                    'robot': 'fa-robot',
+                    'animal': 'fa-dog',
+                    'fantasy': 'fa-dragon'
+                };
+                avatarModel.innerHTML = `<i class="fas ${icons[style]}"></i>`;
+            });
+
+            // Editor controls
+            const editorBtns = document.querySelectorAll('.editor-btn');
+            editorBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    editorBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+
+            // 3D Canvas Simulation
+            const canvas = document.getElementById('world-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+                drawGrid();
+            }
+            
+            function drawGrid() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw grid background
+                ctx.fillStyle = '#0f1123';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw grid lines
+                ctx.strokeStyle = 'rgba(100, 100, 150, 0.3)';
+                ctx.lineWidth = 1;
+                
+                const gridSize = 50;
+                // Vertical lines
+                for (let x = 0; x <= canvas.width; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                
+                // Horizontal lines
+                for (let y = 0; y <= canvas.height; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                
+                // Draw some sample blocks
+                drawBlock(100, 100, 'grass');
+                drawBlock(200, 100, 'stone');
+                drawBlock(150, 200, 'wood');
+                drawBlock(250, 200, 'water');
+                
+                // Draw avatar in the center
+                drawAvatar(canvas.width/2, canvas.height/2);
+            }
+            
+            function drawBlock(x, y, type) {
+                const colors = {
+                    'grass': '#7CFC00',
+                    'stone': '#808080',
+                    'wood': '#8B4513',
+                    'water': '#1E90FF'
+                };
+                
+                ctx.fillStyle = colors[type] || '#666';
+                ctx.fillRect(x, y, 40, 40);
+                
+                // Add 3D effect
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, 40, 40);
+                
+                // Highlight
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.fillRect(x, y, 10, 10);
+            }
+            
+            function drawAvatar(x, y) {
+                ctx.save();
+                ctx.translate(x, y);
+                
+                // Avatar body
+                ctx.fillStyle = avatarColor.value;
+                ctx.beginPath();
+                ctx.arc(0, 0, 25, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Avatar details
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(-8, -5, 5, 0, Math.PI * 2);
+                ctx.arc(8, -5, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Smile
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 5, 10, 0.2, Math.PI - 0.2);
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+            
+            // Handle drag and drop on canvas
+            canvas.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            
+            canvas.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const blockType = e.dataTransfer.getData('blockType');
+                const blockColor = e.dataTransfer.getData('blockColor');
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Draw the dropped block
+                ctx.fillStyle = blockColor;
+                ctx.fillRect(x - 20, y - 20, 40, 40);
+                
+                // Add block to world data
+                addBlockToWorld(blockType, x, y);
+            });
+            
+            // World data storage
+            let worldData = {
+                blocks: [],
+                avatar: {
+                    x: canvas.width/2,
+                    y: canvas.height/2,
+                    size: 100,
+                    color: avatarColor.value,
+                    style: 'robot'
+                },
+                scripts: []
+            };
+            
+            function addBlockToWorld(type, x, y) {
+                worldData.blocks.push({
+                    id: Date.now().toString(),
+                    type: type,
+                    x: x,
+                    y: y,
+                    color: blockTypes.find(b => b.name.toLowerCase() === type)?.color || '#666'
+                });
+                
+                console.log(`Added ${type} block at (${x}, ${y})`);
+                console.log('World blocks:', worldData.blocks);
+            }
+            
+            // Initialize canvas
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Script examples
+            const scriptExampleBtns = document.querySelectorAll('.script-example-btn');
+            const codeEditor = document.getElementById('code-editor');
+            
+            scriptExampleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const scriptType = btn.getAttribute('data-script');
+                    let exampleCode = '';
+                    
+                    switch(scriptType) {
+                        case 'move':
+                            exampleCode = `// Move block with ID 'block1' to new position
+world.moveBlock('block1', 300, 200);
+console.log('Block moved!');`;
+                            break;
+                        case 'color':
+                            exampleCode = `// Change color of all grass blocks
+world.blocks.forEach(block => {
+    if(block.type === 'grass') {
+        world.changeBlockColor(block.id, '#32CD32');
+    }
+});
+console.log('Grass blocks color changed!');`;
+                            break;
+                        case 'rotate':
+                            exampleCode = `// Rotate all objects in the world
+function rotateWorld(degrees) {
+    world.blocks.forEach(block => {
+        // Apply rotation logic here
+    });
+    console.log('World rotated by ' + degrees + ' degrees');
+}
+
+rotateWorld(45);`;
+                            break;
+                    }
+                    
+                    codeEditor.value = exampleCode;
+                    
+                    // Switch to code editor tab
+                    document.querySelector('[data-tab="code-editor"]').click();
+                });
+            });
+            
+            // Execute code button
+            document.getElementById('execute-code-btn').addEventListener('click', () => {
+                const code = codeEditor.value;
+                console.log('Executing code:', code);
+                
+                // Create a safe execution environment
+                try {
+                    // In a real app, this would execute in a sandboxed environment
+                    // For demo, we'll just log and show a message
+                    alert('Code executed! Check console for output.');
+                    
+                    // Simulate code execution effects
+                    if (code.includes('world.moveBlock')) {
+                        alert('Simulation: Block would move in a real 3D environment');
+                    }
+                    if (code.includes('world.changeBlockColor')) {
+                        alert('Simulation: Block colors would change in a real 3D environment');
+                    }
+                    
+                    // Save script to world data
+                    worldData.scripts.push({
+                        id: Date.now().toString(),
+                        code: code,
+                        executed: new Date().toISOString()
+                    });
+                    
+                } catch (error) {
+                    alert('Error executing code: ' + error.message);
+                }
+            });
+            
+            // Save world button
+            document.getElementById('save-world-btn').addEventListener('click', () => {
+                // Update world data with current avatar settings
+                worldData.avatar = {
+                    x: canvas.width/2,
+                    y: canvas.height/2,
+                    size: parseInt(avatarSize.value),
+                    color: avatarColor.value,
+                    style: avatarStyle.value
+                };
+                
+                // Save to localStorage
+                const worldId = 'world_' + Date.now();
+                const worldName = prompt('Enter a name for your world:', 'My Avatar World');
+                
+                if (worldName) {
+                    const savedWorld = {
+                        id: worldId,
+                        name: worldName,
+                        data: worldData,
+                        created: new Date().toISOString(),
+                        thumbnail: '🌎' // In real app, this would be a generated thumbnail
+                    };
+                    
+                    // Get existing worlds
+                    const savedWorlds = JSON.parse(localStorage.getItem('avatarWorlds') || '[]');
+                    savedWorlds.push(savedWorld);
+                    localStorage.setItem('avatarWorlds', JSON.stringify(savedWorlds));
+                    
+                    alert(`World "${worldName}" saved successfully!`);
+                    
+                    // Refresh worlds list
+                    loadWorlds();
+                }
+            });
+            
+            // New world button
+            document.getElementById('new-world-btn').addEventListener('click', () => {
+                if (confirm('Create a new world? Current unsaved changes will be lost.')) {
+                    worldData = {
+                        blocks: [],
+                        avatar: {
+                            x: canvas.width/2,
+                            y: canvas.height/2,
+                            size: 100,
+                            color: '#6a5acd',
+                            style: 'robot'
+                        },
+                        scripts: []
+                    };
+                    
+                    // Reset avatar settings
+                    avatarSize.value = 100;
+                    avatarColor.value = '#6a5acd';
+                    avatarStyle.value = 'robot';
+                    avatarModel.style.fontSize = '10rem';
+                    avatarModel.innerHTML = '<i class="fas fa-robot"></i>';
+                    avatarModel.style.color = '#6a5acd';
+                    
+                    // Clear canvas
+                    drawGrid();
+                    
+                    alert('New world created!');
+                }
+            });
+            
+            // Run script button (in header)
+            document.getElementById('run-script-btn').addEventListener('click', () => {
+                // Switch to code editor and focus
+                document.querySelector('[data-tab="code-editor"]').click();
+                codeEditor.focus();
+            });
+            
+            // Load saved worlds
+            function loadWorlds() {
+                const worldsGrid = document.getElementById('worlds-grid');
+                worldsGrid.innerHTML = '';
+                
+                const savedWorlds = JSON.parse(localStorage.getItem('avatarWorlds') || '[]');
+                
+                if (savedWorlds.length === 0) {
+                    worldsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No worlds saved yet. Create and save your first world!</p>';
+                    return;
+                }
+                
+                savedWorlds.forEach(world => {
+                    const worldCard = document.createElement('div');
+                    worldCard.className = 'world-card';
+                    
+                    const createdDate = new Date(world.created);
+                    const formattedDate = createdDate.toLocaleDateString();
+                    
+                    worldCard.innerHTML = `
+                        <div class="world-thumbnail">
+                            ${world.thumbnail || '🌎'}
+                        </div>
+                        <div class="world-info">
+                            <h3 class="world-title">${world.name}</h3>
+                            <p class="world-description">Created: ${formattedDate}</p>
+                            <p class="world-description">Blocks: ${world.data.blocks.length}</p>
+                            <button class="btn btn-secondary load-world-btn" data-world-id="${world.id}" style="width: 100%; margin-top: 10px;">
+                                <i class="fas fa-edit"></i> Load World
+                            </button>
+                        </div>
+                    `;
+                    
+                    worldsGrid.appendChild(worldCard);
+                });
+                
+                // Add event listeners to load world buttons
+                document.querySelectorAll('.load-world-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const worldId = this.getAttribute('data-world-id');
+                        const savedWorlds = JSON.parse(localStorage.getItem('avatarWorlds') || '[]');
+                        const worldToLoad = savedWorlds.find(w => w.id === worldId);
+                        
+                        if (worldToLoad) {
+                            if (confirm(`Load world "${worldToLoad.name}"? Current unsaved changes will be lost.`)) {
+                                worldData = worldToLoad.data;
+                                
+                                // Update avatar settings
+                                avatarSize.value = worldData.avatar.size;
+                                avatarColor.value = worldData.avatar.color;
+                                avatarStyle.value = worldData.avatar.style;
+                                avatarModel.style.fontSize = `${worldData.avatar.size/10}rem`;
+                                avatarModel.style.color = worldData.avatar.color;
+                                
+                                // Update avatar icon
+                                const icons = {
+                                    'humanoid': 'fa-user-astronaut',
+                                    'robot': 'fa-robot',
+                                    'animal': 'fa-dog',
+                                    'fantasy': 'fa-dragon'
+                                };
+                                avatarModel.innerHTML = `<i class="fas ${icons[worldData.avatar.style]}"></i>`;
+                                
+                                // Redraw canvas with loaded world
+                                drawGrid();
+                                
+                                // Switch to world editor
+                                document.querySelector('[data-tab="world-editor"]').click();
+                                
+                                alert(`World "${worldToLoad.name}" loaded successfully!`);
+                            }
+                        }
+                    });
+                });
+            }
+            
+            // Initialize worlds list
+            loadWorlds();
+            
+            // Simulate API function call (in a real app, this would call the Vercel API)
+            function callApiFunction(endpoint, data) {
+                console.log(`Calling API: ${endpoint}`, data);
+                // In a real app, this would be a fetch call to your Vercel function
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({ success: true, message: 'API call simulated' });
+                    }, 500);
+                });
+            }
+            
+            // Example of using the API function for block creation
+            document.getElementById('add-btn').addEventListener('click', async () => {
+                // Simulate calling the API function to create a custom block
+                const result = await callApiFunction('/api/create-block', {
+                    type: 'custom',
+                    properties: {
+                        color: '#FF5733',
+                        texture: 'glossy',
+                        physics: true
+                    }
+                });
+                
+                console.log('Block creation API result:', result);
+                alert('Custom block created via API simulation');
+            });
+        });
+    </script>
+</body>
+</html>
