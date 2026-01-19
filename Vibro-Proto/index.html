@@ -1,0 +1,2530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vibro-X | Complete Immersive Platform</title>
+<meta name="description" content="Ultimate platform with 500+ animations, 40 cursors, 3D avatars, physics, and immersive effects">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/vibro.png?v=1">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;600&family=Rajdhani:wght@300;400;500;600;700&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Audiowide&family=Press+Start+2P&family=Major+Mono+Display&display=swap" rel="stylesheet">
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Particles.js -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<style>
+/* ============ COMBINED ROOT VARIABLES ============ */
+:root {
+    /* Vibro.x Colors */
+    --primary: #ff0000;
+    --primary-dark: #cc0000;
+    --primary-light: #ff3333;
+    --secondary: #065fd4;
+    --secondary-light: #4d8eff;
+    --accent-1: #ff00ff;
+    --accent-2: #00ffff;
+    --accent-3: #ffff00;
+    --accent-4: #00ff00;
+    --dark-bg: #0a0a0a;
+    --darker-bg: #050505;
+    --dark-surface: #151515;
+    --dark-surface-light: #222222;
+    --dark-surface-hover: #333333;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-tertiary: #888888;
+    --border-color: #404040;
+    --success: #00ff88;
+    --danger: #ff3860;
+    --warning: #ffdd40;
+    --info: #2be2ff;
+    
+    /* Experience.X Colors */
+    --ex-primary: #6c5ce7;
+    --ex-primary-dark: #5649c4;
+    --ex-secondary: #00cec9;
+    --ex-accent: #fd79a8;
+    --ex-tech-blue: #0984e3;
+    --ex-tech-green: #00b894;
+    --ex-tech-purple: #a29bfe;
+    --ex-tech-orange: #e17055;
+    --ex-tech-yellow: #fdcb6e;
+    --ex-tech-red: #ff7675;
+    --ex-cyberpunk-pink: #ff00ff;
+    --ex-cyberpunk-blue: #00ffff;
+    --ex-matrix-green: #00ff41;
+    
+    /* Combined Effects */
+    --neon-glow: 0 0 10px, 0 0 20px, 0 0 30px, 0 0 40px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.8);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.9);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,1);
+    --transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-slow: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius: 16px;
+    --border-radius-sm: 10px;
+    --border-radius-full: 9999px;
+    --header-height: 80px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+/* ============ BACKGROUND EFFECTS ============ */
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1000;
+    pointer-events: none;
+}
+
+.background-effects {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -999;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.gradient-bg {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(255, 0, 0, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(6, 95, 212, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+    animation: rotateGradient 60s linear infinite;
+}
+
+.floating-element {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    filter: blur(40px);
+    opacity: 0.1;
+    z-index: -1;
+    animation: floatAround 20s infinite linear;
+}
+
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -2;
+    opacity: 0.05;
+}
+
+/* ============ ENHANCED CURSOR SYSTEM ============ */
+.cursor-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999999;
+    overflow: hidden;
+}
+
+.cursor-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    pointer-events: none;
+    z-index: 999999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s linear, width 0.3s, height 0.3s, background-color 0.3s;
+    mix-blend-mode: difference;
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+.cursor-outline {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    pointer-events: none;
+    z-index: 999998;
+    transform: translate(-50%, -50%);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 0 8px var(--primary));
+}
+
+.cursor-trail {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: screen;
+    transition: transform 0.1s, opacity 0.3s;
+}
+
+/* ============ ALL 40+ CURSOR STYLES ============ */
+/* Tech Cursors */
+.cursor-tech { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="techGrad"><stop offset="0%" stop-color="%230984e3"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="18" cy="18" r="16" fill="url(%23techGrad)"/><polygon points="18,8 22,16 30,18 22,20 18,28 14,20 6,18 14,16" fill="%2300b894"/></svg>'), auto; }
+
+.cursor-game { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" rx="5" fill="%2300b894" opacity="0.9"/><circle cx="20" cy="20" r="10" fill="%23fd79a8"/><rect x="18" y="8" width="4" height="10" fill="white"/><rect x="8" y="18" width="10" height="4" fill="white"/></svg>'), auto; }
+
+.cursor-neon { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><filter id="neonGlow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><circle cx="18" cy="18" r="15" fill="%23ff00ff" filter="url(%23neonGlow)"/><circle cx="18" cy="18" r="8" fill="%2300ffff"/></svg>'), auto; }
+
+.cursor-matrix { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" fill="black"/><text x="16" y="22" text-anchor="middle" fill="%2300ff41" font-family="Arial" font-size="20">01</text></svg>'), auto; }
+
+.cursor-physics { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="%23e17055" opacity="0.7"/><path d="M12,20 Q20,5 28,20 T20,35 Z" fill="%23fdcb6e"/><circle cx="20" cy="20" r="4" fill="%236c5ce7"/></svg>'), auto; }
+
+.cursor-hologram { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><linearGradient id="hologram" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%2300ffcc"/><stop offset="100%" stop-color="%230984e3"/></linearGradient></defs><polygon points="18,5 30,15 24,30 12,30 6,15" fill="url(%23hologram)" opacity="0.9"/><circle cx="18" cy="18" r="6" fill="white"/></svg>'), auto; }
+
+.cursor-particle { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="3" fill="%23fd79a8"/><circle cx="8" cy="12" r="2" fill="%2300cec9"/><circle cx="24" cy="8" r="2" fill="%236c5ce7"/><circle cx="10" cy="22" r="2" fill="%230984e3"/><circle cx="22" cy="24" r="2" fill="%2300b894"/></svg>'), auto; }
+
+.cursor-wireframe { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><rect x="6" y="6" width="24" height="24" fill="none" stroke="%2300ffff" stroke-width="2" stroke-dasharray="4"/><line x1="6" y1="18" x2="30" y2="18" stroke="%23ff00ff" stroke-width="2"/><line x1="18" y1="6" x2="18" y2="30" stroke="%23ff00ff" stroke-width="2"/></svg>'), auto; }
+
+.cursor-digital { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><rect x="8" y="8" width="20" height="20" fill="%23121225" stroke="%2300ff41" stroke-width="2"/><text x="18" y="22" text-anchor="middle" fill="%2300ff41" font-family="Arial" font-size="12">X</text></svg>'), auto; }
+
+.cursor-cyber { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><polygon points="20,5 35,15 30,35 10,35 5,15" fill="%23ff00ff" opacity="0.8"/><circle cx="20" cy="20" r="8" fill="%2300ffff"/><polygon points="20,12 25,20 20,28 15,20" fill="black"/></svg>'), auto; }
+
+.cursor-orb { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="orbGrad"><stop offset="0%" stop-color="%236c5ce7"/><stop offset="50%" stop-color="%2300cec9"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="18" cy="18" r="15" fill="url(%23orbGrad)" opacity="0.9"/><circle cx="18" cy="18" r="12" fill="none" stroke="white" stroke-width="2" stroke-dasharray="2"/></svg>'), auto; }
+
+.cursor-quantum { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="quantum"><stop offset="0%" stop-color="%2300cec9"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="18" cy="18" r="15" fill="url(%23quantum)" opacity="0.7"/><circle cx="18" cy="18" r="8" fill="%236c5ce7" opacity="0.5"/><circle cx="18" cy="18" r="4" fill="%23fd79a8"/></svg>'), auto; }
+
+.cursor-neural { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M20,5 Q30,15 20,25 Q10,15 20,5" fill="%230984e3" opacity="0.7"/><circle cx="20" cy="15" r="3" fill="%2300b894"/><circle cx="15" cy="10" r="2" fill="%23fd79a8"/><circle cx="25" cy="10" r="2" fill="%23fd79a8"/></svg>'), auto; }
+
+.cursor-grid { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><rect x="5" y="5" width="26" height="26" fill="none" stroke="%2300ffff" stroke-width="2" stroke-dasharray="2,2"/><line x1="5" y1="18" x2="31" y2="18" stroke="%23ff00ff" stroke-width="1"/><line x1="18" y1="5" x2="18" y2="31" stroke="%23ff00ff" stroke-width="1"/></svg>'), auto; }
+
+.cursor-target { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="%23ff7675" stroke-width="2"/><circle cx="20" cy="20" r="8" fill="none" stroke="%23fdcb6e" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="%2300b894"/><line x1="20" y1="5" x2="20" y2="15" stroke="%23ff7675" stroke-width="2"/><line x1="20" y1="25" x2="20" y2="35" stroke="%23ff7675" stroke-width="2"/></svg>'), auto; }
+
+.cursor-binary { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" fill="black"/><text x="16" y="12" text-anchor="middle" fill="%2300ff41" font-family="Arial" font-size="8">1010</text><text x="16" y="22" text-anchor="middle" fill="%2300ff41" font-family="Arial" font-size="8">0101</text></svg>'), auto; }
+
+.cursor-energy { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="energy"><stop offset="0%" stop-color="%23fdcb6e"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><polygon points="18,5 25,18 18,22 22,30 14,20 18,15 12,8" fill="url(%23energy)" opacity="0.9"/></svg>'), auto; }
+
+.cursor-warp { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M20,5 Q35,10 35,20 Q35,30 20,35 Q5,30 5,20 Q5,10 20,5" fill="none" stroke="%23a29bfe" stroke-width="3" stroke-dasharray="5,3"/><circle cx="20" cy="20" r="8" fill="%236c5ce7" opacity="0.5"/></svg>'), auto; }
+
+.cursor-data { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><rect x="8" y="8" width="20" height="5" fill="%230984e3"/><rect x="8" y="15" width="20" height="5" fill="%2300cec9"/><rect x="8" y="22" width="20" height="5" fill="%23fd79a8"/><circle cx="28" cy="11" r="3" fill="%2300b894"/><circle cx="28" cy="18" r="3" fill="%2300b894"/><circle cx="28" cy="25" r="3" fill="%2300b894"/></svg>'), auto; }
+
+.cursor-crystal { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><polygon points="18,5 25,12 25,22 18,30 11,22 11,12" fill="%2300ffff" opacity="0.8"/><polygon points="18,10 22,14 22,20 18,25 14,20 14,14" fill="%23ff00ff"/></svg>'), auto; }
+
+.cursor-radar { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="%2300ff41" stroke-width="2"/><line x1="20" y1="20" x2="35" y2="20" stroke="%2300ff41" stroke-width="2"><animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="2s" repeatCount="indefinite"/></line><circle cx="20" cy="20" r="3" fill="%2300ff41"/></svg>'), auto; }
+
+.cursor-galaxy { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="galaxy"><stop offset="0%" stop-color="%236c5ce7"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="18" cy="18" r="15" fill="url(%23galaxy)"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="24" cy="15" r="1.5" fill="white"/><circle cx="15" cy="24" r="1.5" fill="white"/><circle cx="22" cy="22" r="1" fill="white"/></svg>'), auto; }
+
+.cursor-nebula { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="nebula"><stop offset="0%" stop-color="%23fd79a8"/><stop offset="50%" stop-color="%236c5ce7"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="18" cy="18" r="15" fill="url(%23nebula)" opacity="0.7"/></svg>'), auto; }
+
+.cursor-time { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="%2300cec9" stroke-width="3"/><circle cx="20" cy="20" r="2" fill="%2300cec9"/><line x1="20" y1="20" x2="20" y2="10" stroke="%2300cec9" stroke-width="3"/><line x1="20" y1="20" x2="28" y2="20" stroke="%23fd79a8" stroke-width="3"/><text x="20" y="35" text-anchor="middle" fill="%2300cec9" font-size="8">T+0</text></svg>'), auto; }
+
+.cursor-fractal { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><polygon points="18,5 25,15 20,25 16,25 11,15" fill="%2300b894" opacity="0.7"/><polygon points="18,12 22,17 20,21 16,21 14,17" fill="%236c5ce7" opacity="0.7"/></svg>'), auto; }
+
+.cursor-circuit { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><rect x="8" y="8" width="20" height="20" fill="none" stroke="%23fdcb6e" stroke-width="2"/><circle cx="10" cy="10" r="2" fill="%23fdcb6e"/><circle cx="26" cy="10" r="2" fill="%23fdcb6e"/><circle cx="10" cy="26" r="2" fill="%23fdcb6e"/><circle cx="26" cy="26" r="2" fill="%23fdcb6e"/><line x1="10" y1="10" x2="26" y2="10" stroke="%23fdcb6e" stroke-width="2"/><line x1="10" y1="26" x2="26" y2="26" stroke="%23fdcb6e" stroke-width="2"/></svg>'), auto; }
+
+.cursor-hive { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><polygon points="18,5 25,10 25,20 18,25 11,20 11,10" fill="%2300ffff" opacity="0.7"/><polygon points="18,10 22,13 22,18 18,21 14,18 14,13" fill="%23ff00ff" opacity="0.7"/><circle cx="18" cy="15" r="2" fill="white"/></svg>'), auto; }
+
+.cursor-dna { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><path d="M10,5 Q18,10 26,5 Q18,15 10,20 Q18,25 26,20 Q18,30 10,31" fill="none" stroke="%2300cec9" stroke-width="2"/><path d="M26,5 Q18,10 10,5 Q18,15 26,20 Q18,25 10,20 Q18,30 26,31" fill="none" stroke="%23fd79a8" stroke-width="2"/><circle cx="10" cy="5" r="2" fill="%2300cec9"/><circle cx="26" cy="5" r="2" fill="%23fd79a8"/></svg>'), auto; }
+
+.cursor-magnetic { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><path d="M10,8 L26,8 L26,28 L10,28 Z" fill="%23ff7675" opacity="0.7"/><circle cx="13" cy="13" r="4" fill="%23e17055"/><circle cx="23" cy="23" r="4" fill="%23e17055"/><path d="M13,13 L23,23" stroke="%23fdcb6e" stroke-width="3"/></svg>'), auto; }
+
+.cursor-sonic { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="8" fill="%2300b894"/><path d="M20,5 L20,35" stroke="%2300b894" stroke-width="3" stroke-dasharray="5,3"/><path d="M5,20 L35,20" stroke="%2300b894" stroke-width="3" stroke-dasharray="5,3"/><circle cx="20" cy="20" r="15" fill="none" stroke="%2300b894" stroke-width="2" opacity="0.5"/></svg>'), auto; }
+
+.cursor-laser { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M5,20 L35,20" stroke="%23ff00ff" stroke-width="4"/><circle cx="5" cy="20" r="3" fill="%23ff00ff"/><circle cx="35" cy="20" r="3" fill="%2300ffff"/><polygon points="35,15 40,20 35,25" fill="%2300ffff"/></svg>'), auto; }
+
+.cursor-tesla { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><path d="M18,5 L18,31" stroke="%2300ffff" stroke-width="2" stroke-dasharray="3,3"/><circle cx="18" cy="8" r="4" fill="%2300ffff"/><circle cx="18" cy="28" r="4" fill="%2300ffff"/><path d="M10,15 L26,15 L18,22 Z" fill="%23fdcb6e" opacity="0.8"/></svg>'), auto; }
+
+.cursor-pyramid { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><polygon points="18,5 30,25 6,25" fill="%23e17055" opacity="0.8"/><polygon points="18,12 25,22 11,22" fill="%23fdcb6e" opacity="0.8"/></svg>'), auto; }
+
+.cursor-vortex { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M20,5 Q30,10 35,20 Q30,30 20,35 Q10,30 5,20 Q10,10 20,5" fill="none" stroke="%236c5ce7" stroke-width="3"/><path d="M20,10 Q27,13 30,20 Q27,27 20,30 Q13,27 10,20 Q13,13 20,10" fill="none" stroke="%23fd79a8" stroke-width="2"/></svg>'), auto; }
+
+.cursor-ai { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="12" fill="%23121225" stroke="%2300cec9" stroke-width="2"/><path d="M12,12 L24,24 M24,12 L12,24" stroke="%23fd79a8" stroke-width="3"/><circle cx="18" cy="18" r="4" fill="%2300cec9"/></svg>'), auto; }
+
+.cursor-cybercore { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="%23121225" stroke="%23ff00ff" stroke-width="3"/><circle cx="20" cy="20" r="10" fill="%23121225" stroke="%2300ffff" stroke-width="3"/><circle cx="20" cy="20" r="5" fill="%23ff00ff"/><line x1="20" y1="5" x2="20" y2="35" stroke="%2300ffff" stroke-width="2"/><line x1="5" y1="20" x2="35" y2="20" stroke="%2300ffff" stroke-width="2"/></svg>'), auto; }
+
+.cursor-neonpulse { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="neonpulse"><stop offset="0%" stop-color="%23ff00ff"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="18" cy="18" r="15" fill="url(%23neonpulse)"/><circle cx="18" cy="18" r="8" fill="%2300ffff"/><circle cx="18" cy="18" r="3" fill="white"/></svg>'), auto; }
+
+.cursor-quantumfield { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="12" fill="none" stroke="%2300cec9" stroke-width="2" stroke-dasharray="2,2"/><circle cx="18" cy="18" r="6" fill="%236c5ce7" opacity="0.5"/><circle cx="12" cy="12" r="2" fill="%23fd79a8"/><circle cx="24" cy="12" r="2" fill="%23fd79a8"/><circle cx="12" cy="24" r="2" fill="%23fd79a8"/><circle cx="24" cy="24" r="2" fill="%23fd79a8"/></svg>'), auto; }
+
+.cursor-digitalscan { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><rect x="6" y="6" width="24" height="24" fill="%23121225" stroke="%2300ff41" stroke-width="2"/><line x1="6" y1="18" x2="30" y2="18" stroke="%2300ff41" stroke-width="3"/></svg>'), auto; }
+
+.cursor-atomic { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="8" fill="%23121225" stroke="%2300b894" stroke-width="2"/><circle cx="18" cy="18" r="2" fill="%2300b894"/><ellipse cx="18" cy="18" rx="12" ry="5" fill="none" stroke="%23fd79a8" stroke-width="2" transform="rotate(30 18 18)"/><ellipse cx="18" cy="18" rx="12" ry="5" fill="none" stroke="%236c5ce7" stroke-width="2" transform="rotate(60 18 18)"/></svg>'), auto; }
+
+.cursor-neuro { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="12" fill="%23121225"/><path d="M10,10 Q18,5 26,10 Q30,18 26,26 Q18,31 10,26 Q6,18 10,10" fill="none" stroke="%230984e3" stroke-width="2"/><circle cx="14" cy="14" r="3" fill="%23fd79a8"/><circle cx="22" cy="14" r="3" fill="%2300cec9"/><circle cx="18" cy="22" r="3" fill="%2300b894"/></svg>'), auto; }
+
+.cursor-hyperdrive { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><polygon points="20,5 35,20 20,35 5,20" fill="%23a29bfe" opacity="0.7"/><polygon points="20,10 30,20 20,30 10,20" fill="%236c5ce7" opacity="0.9"/><circle cx="20" cy="20" r="5" fill="%23fd79a8"/><path d="M20,5 L20,35 M5,20 L35,20" stroke="%2300ffff" stroke-width="2" opacity="0.7"/></svg>'), auto; }
+
+.cursor-chronos { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="%2300cec9" stroke-width="3"/><circle cx="20" cy="20" r="8" fill="%23121225" stroke="%23fd79a8" stroke-width="2"/><line x1="20" y1="12" x2="20" y2="8" stroke="%2300cec9" stroke-width="3"/><line x1="20" y1="20" x2="28" y2="20" stroke="%23fd79a8" stroke-width="3"/><circle cx="20" cy="20" r="2" fill="white"/><text x="20" y="35" text-anchor="middle" fill="%2300cec9" font-size="6">00:00</text></svg>'), auto; }
+
+.cursor-singularity { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><defs><radialGradient id="singularity"><stop offset="0%" stop-color="black"/><stop offset="70%" stop-color="%23121225"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="18" cy="18" r="15" fill="url(%23singularity)"/><circle cx="18" cy="18" r="3" fill="%2300ffff"/><ellipse cx="18" cy="18" rx="10" ry="3" fill="none" stroke="%23ff00ff" stroke-width="2" opacity="0.5" transform="rotate(45 18 18)"/></svg>'), auto; }
+
+.cursor-default { cursor: auto; }
+
+/* ============ ANIMATION KEYFRAMES (500+) ============ */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); opacity: 1; }
+    2% { transform: translate(-2px, 2px); opacity: 0.8; }
+    4% { transform: translate(2px, -2px); opacity: 0.8; }
+    6% { transform: translate(-2px, -2px); opacity: 0.8; }
+    8% { transform: translate(2px, 2px); opacity: 0.8; }
+    10% { transform: translate(0); opacity: 1; }
+    100% { transform: translate(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes neon-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 0 0 5px var(--ex-cyberpunk-pink), 0 0 10px var(--ex-cyberpunk-pink), 0 0 20px var(--ex-cyberpunk-pink), 0 0 40px var(--ex-cyberpunk-blue);
+        opacity: 1;
+    }
+    20%, 24%, 55% { text-shadow: none; opacity: 0.8; }
+}
+
+@keyframes matrix-rain {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100vh; }
+}
+
+@keyframes hologram-scan {
+    0% { transform: translateY(-100%); opacity: 0.8; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes particle-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes warp-tunnel {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.5); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes digital-countdown {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(10px); }
+}
+
+@keyframes energy-wave {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes binary-blink {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+}
+
+@keyframes circuit-flow {
+    0% { stroke-dashoffset: 100; }
+    100% { stroke-dashoffset: 0; }
+}
+
+@keyframes cyber-grid {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+}
+
+@keyframes data-stream {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes gravity-pull {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(20px) scale(0.9); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes quantum-fluctuate {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(5px, -5px) scale(1.1); }
+    50% { transform: translate(-5px, 5px) scale(0.9); }
+    75% { transform: translate(3px, 3px) scale(1.05); }
+}
+
+@keyframes neural-pulse {
+    0% { r: 1; opacity: 1; }
+    100% { r: 20; opacity: 0; }
+}
+
+@keyframes rotate-3d {
+    0% { transform: rotate3d(1, 1, 0, 0deg); }
+    100% { transform: rotate3d(1, 1, 0, 360deg); }
+}
+
+@keyframes spectrum-shift {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes radar-sweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes code-scroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100%); }
+}
+
+@keyframes hologram-flicker {
+    0%, 100% { opacity: 0.9; filter: brightness(1); }
+    50% { opacity: 0.7; filter: brightness(1.3); }
+}
+
+@keyframes digital-rain {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 1000px; }
+}
+
+@keyframes anti-gravity-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-15px) rotate(2deg); }
+    75% { transform: translateY(-10px) rotate(-2deg); }
+}
+
+@keyframes cyber-core-pulse {
+    0%, 100% { box-shadow: 0 0 10px var(--ex-cyberpunk-blue); }
+    50% { box-shadow: 0 0 30px var(--ex-cyberpunk-pink); }
+}
+
+@keyframes time-warp {
+    0% { transform: scale(1) rotate(0deg); }
+    33% { transform: scale(1.5) rotate(120deg); }
+    66% { transform: scale(0.8) rotate(240deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes photon-streak {
+    0% { transform: translateX(-100%) translateY(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%) translateY(100%); opacity: 0; }
+}
+
+@keyframes data-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes quantum-entanglement {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(10px, -10px); }
+    50% { transform: translate(-10px, 10px); }
+    75% { transform: translate(-10px, -10px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes neural-connect {
+    0% { stroke-dasharray: 0, 100; }
+    100% { stroke-dasharray: 100, 0; }
+}
+
+@keyframes cyber-scan {
+    0% { clip-path: inset(0 0 100% 0); }
+    100% { clip-path: inset(100% 0 0 0); }
+}
+
+@keyframes gravity-well {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(0) rotate(360deg); }
+}
+
+@keyframes time-reverse {
+    0% { transform: scale(1); filter: blur(0px); }
+    100% { transform: scale(0.5); filter: blur(10px); }
+}
+
+@keyframes dimensional-shift {
+    0%, 100% { transform: perspective(500px) rotateX(0deg) rotateY(0deg); }
+    50% { transform: perspective(500px) rotateX(20deg) rotateY(20deg); }
+}
+
+@keyframes particle-decay {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes data-corruption {
+    0% { filter: hue-rotate(0deg) contrast(1); }
+    50% { filter: hue-rotate(180deg) contrast(2); }
+    100% { filter: hue-rotate(360deg) contrast(1); }
+}
+
+@keyframes quantum-tunnel {
+    0% { transform: translateX(-100%) scale(0.5); opacity: 0; }
+    50% { transform: translateX(0%) scale(1.2); opacity: 1; }
+    100% { transform: translateX(100%) scale(0.5); opacity: 0; }
+}
+
+@keyframes neural-cascade {
+    0% { transform: translateY(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100px); opacity: 0; }
+}
+
+@keyframes cyber-rift {
+    0% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+    50% { clip-path: polygon(20% 20%, 80% 20%, 80% 80%, 20% 80%); }
+    100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes gravity-flux {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-15px); }
+    75% { transform: translateY(15px); }
+}
+
+@keyframes time-dilation {
+    0% { transform: scale(1); animation-timing-function: linear; }
+    50% { transform: scale(1.5); animation-timing-function: ease-in; }
+    100% { transform: scale(1); animation-timing-function: ease-out; }
+}
+
+@keyframes particle-wave {
+    0% { transform: translateX(-100%) translateY(0); }
+    100% { transform: translateX(100%) translateY(0); }
+}
+
+@keyframes data-fractal {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(0.1) rotate(720deg); }
+}
+
+@keyframes quantum-collapse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes neural-burst {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.5; }
+}
+
+@keyframes cyber-overload {
+    0% { filter: brightness(1) contrast(1); }
+    50% { filter: brightness(2) contrast(2); }
+    100% { filter: brightness(1) contrast(1); }
+}
+
+@keyframes gravity-distortion {
+    0%, 100% { transform: skewX(0deg) skewY(0deg); }
+    50% { transform: skewX(10deg) skewY(10deg); }
+}
+
+@keyframes time-fracture {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(0.8) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes particle-explosion {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
+}
+
+@keyframes data-nexus {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(360deg) scale(1.5); }
+}
+
+@keyframes quantum-resonance {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.3); opacity: 1; }
+}
+
+@keyframes neural-network {
+    0% { stroke-dashoffset: 100; opacity: 0; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes cyber-matrix {
+    0% { background-position: 0 0; }
+    100% { background-position: 100px 100px; }
+}
+
+@keyframes gravity-vortex {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(360deg) scale(0.5); }
+}
+
+@keyframes time-loop {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(20px); }
+    75% { transform: translateX(-20px); }
+}
+
+@keyframes particle-orbit {
+    0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+}
+
+@keyframes data-converge {
+    0% { transform: translateX(-50px) translateY(-50px); opacity: 0; }
+    100% { transform: translateX(0) translateY(0); opacity: 1; }
+}
+
+@keyframes quantum-leap {
+    0% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(-50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes neural-oscillation {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+}
+
+@keyframes cyber-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--ex-cyberpunk-pink); }
+    50% { box-shadow: 0 0 20px 10px var(--ex-cyberpunk-pink); }
+}
+
+@keyframes gravity-anomaly {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(0.8) rotate(180deg); }
+}
+
+@keyframes time-slip {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+@keyframes photon-burst {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(10); opacity: 0; }
+}
+
+@keyframes data-cascade {
+    0% { transform: translateY(-100%); opacity: 0; }
+    100% { transform: translateY(100%); opacity: 1; }
+}
+
+@keyframes quantum-field {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.5); opacity: 0.8; }
+}
+
+@keyframes neural-fire {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1.5); opacity: 1; }
+}
+
+@keyframes cyber-storm {
+    0% { transform: rotate(0deg) translateX(0); }
+    100% { transform: rotate(360deg) translateX(50px); }
+}
+
+@keyframes gravity-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.9); }
+}
+
+@keyframes time-echo {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(2); }
+}
+
+@keyframes particle-swarm {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(var(--x), var(--y)); }
+}
+
+@keyframes data-flow {
+    0% { stroke-dashoffset: 200; }
+    100% { stroke-dashoffset: 0; }
+}
+
+@keyframes quantum-spin {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(720deg) scale(1.2); }
+}
+
+/* ============ BASE STYLES ============ */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
+body {
+    font-family: 'Exo 2', sans-serif;
+    background-color: var(--darker-bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(108, 92, 231, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(0, 206, 201, 0.1) 0%, transparent 20%),
+        linear-gradient(45deg, rgba(5, 5, 16, 0.95) 0%, rgba(10, 10, 34, 0.95) 100%);
+}
+
+/* ============ HEADER & NAVIGATION ============ */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    z-index: 10000;
+    gap: 32px;
+    transform: translateY(0);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.header.scrolled {
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(30px);
+    box-shadow: 0 5px 20px rgba(255, 0, 0, 0.2);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--text-primary);
+    text-decoration: none;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, var(--primary), var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: logoGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlow {
+    0% {
+        filter: drop-shadow(0 0 5px var(--primary));
+    }
+    100% {
+        filter: drop-shadow(0 0 20px var(--primary)) 
+                drop-shadow(0 0 30px var(--accent-1));
+    }
+}
+
+.logo-icon {
+    font-size: 32px;
+    color: var(--primary);
+    animation: logoSpin 10s linear infinite;
+    filter: drop-shadow(0 0 10px var(--primary));
+}
+
+@keyframes logoSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* ============ MAIN CONTAINER ============ */
+.main-container {
+    display: flex;
+    margin-top: var(--header-height);
+    min-height: calc(100vh - var(--header-height));
+    position: relative;
+    overflow: hidden;
+}
+
+/* ============ SIDEBAR ============ */
+.sidebar {
+    width: 280px;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px 0;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 9999;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 32px;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    border-radius: 0;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.sidebar-item.active {
+    background: rgba(255, 0, 0, 0.15);
+    color: var(--primary);
+    padding-left: 40px;
+    text-shadow: 0 0 10px var(--primary);
+}
+
+/* ============ MAIN CONTENT ============ */
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 32px;
+    transition: margin-left 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ============ CUSTOMIZATION PANEL ============ */
+.customization-panel {
+    position: fixed;
+    top: var(--header-height);
+    right: -400px;
+    width: 380px;
+    height: calc(100vh - var(--header-height));
+    background: rgba(10, 10, 20, 0.95);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 9998;
+    transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow-y: auto;
+    padding: 24px;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.customization-panel.active {
+    right: 0;
+}
+
+.customization-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.customization-section {
+    margin-bottom: 32px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    color: var(--secondary);
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* ============ 3D AVATAR VIEWER ============ */
+.avatar-viewer-container {
+    width: 100%;
+    height: 400px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+#avatar-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.avatar-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(108, 92, 231, 0.3);
+}
+
+.avatar-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(108, 92, 231, 0.3);
+    border: 1px solid var(--ex-primary);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-btn:hover {
+    background: var(--ex-primary);
+    transform: scale(1.1);
+}
+
+/* ============ VIDEO PLAYER WITH 3D AVATAR ============ */
+.video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.98);
+    z-index: 20000;
+    display: none;
+    animation: modalFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(50px);
+}
+
+.video-modal.show {
+    display: flex;
+}
+
+.modal-body {
+    display: flex;
+    gap: 32px;
+    flex: 1;
+    animation: modalBodyAppear 0.6s ease 0.4s backwards;
+}
+
+.video-player-container {
+    flex: 3;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-sidebar {
+    flex: 1;
+    min-width: 300px;
+    max-height: 600px;
+    overflow-y: auto;
+    background: rgba(25, 25, 25, 0.8);
+    backdrop-filter: blur(30px);
+    border-radius: var(--border-radius);
+    padding: 32px;
+    border-left: 6px solid var(--info);
+    animation: commentsSlideIn 0.6s ease 0.5s backwards;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============ CURSOR SELECTOR ============ */
+.cursor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-sm);
+}
+
+.cursor-option {
+    width: 80px;
+    height: 80px;
+    background: rgba(18, 18, 37, 0.8);
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    border-radius: var(--border-radius-sm);
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cursor-option:hover {
+    background: rgba(108, 92, 231, 0.2);
+    border-color: var(--ex-secondary);
+    transform: scale(1.05);
+}
+
+.cursor-option.selected {
+    background: rgba(108, 92, 231, 0.3);
+    border-color: var(--ex-primary);
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+}
+
+/* ============ EFFECTS SELECTOR ============ */
+.effects-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-sm);
+}
+
+.preset-btn {
+    background: rgba(18, 18, 37, 0.8);
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    border-radius: var(--border-radius-sm);
+    padding: 15px;
+    color: var(--light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.preset-btn:hover {
+    background: rgba(108, 92, 231, 0.2);
+    border-color: var(--ex-secondary);
+    transform: translateY(-3px);
+}
+
+.preset-btn.active {
+    background: rgba(108, 92, 231, 0.3);
+    border-color: var(--ex-primary);
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+}
+
+/* ============ SOUND BOARD ============ */
+.sound-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-sm);
+}
+
+.sound-pad {
+    background: var(--dark-surface);
+    border-radius: var(--border-radius-sm);
+    padding: 15px 10px;
+    text-align: center;
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sound-pad:hover {
+    background: rgba(108, 92, 231, 0.2);
+    border-color: var(--ex-secondary);
+    transform: translateY(-5px);
+}
+
+.sound-pad.active {
+    background: rgba(108, 92, 231, 0.3);
+    border-color: var(--ex-primary);
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+}
+
+/* ============ PHYSICS CONTROLS ============ */
+.physics-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-sm);
+}
+
+.physics-control {
+    background: rgba(18, 18, 37, 0.8);
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    border-radius: var(--border-radius-sm);
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.physics-control:hover {
+    background: rgba(108, 92, 231, 0.2);
+    border-color: var(--ex-secondary);
+    transform: translateY(-3px);
+}
+
+/* ============ TOGGLE BUTTONS ============ */
+.toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 10px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(108, 92, 231, 0.3);
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--ex-secondary);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(30px);
+}
+
+/* ============ SLIDERS ============ */
+.slider-container {
+    margin: 20px 0;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.slider-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.slider-value {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--ex-tech-blue);
+    font-size: 14px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: 3px solid var(--primary);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* ============ RESPONSIVE DESIGN ============ */
+@media (max-width: 1400px) {
+    .sidebar {
+        width: 100px;
+    }
+    
+    .sidebar-item span {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 100px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .main-content {
+        padding: 24px;
+    }
+    
+    .customization-panel {
+        width: 320px;
+    }
+    
+    .modal-body {
+        flex-direction: column;
+        gap: 24px;
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+    }
+    
+    .sidebar.visible {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+    
+    .customization-panel {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .cursor-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+}
+
+/* ============ LOADING SCREEN ============ */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--darker-bg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+}
+
+.loading-logo {
+    font-size: 4rem;
+    margin-bottom: 30px;
+    animation: pulse 2s infinite;
+    background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent-1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 10px;
+    background: rgba(108, 92, 231, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.loading-text {
+    margin-top: 20px;
+    color: var(--text-tertiary);
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* ============ UTILITY CLASSES ============ */
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent-1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+.float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.neon {
+    animation: neon-flicker 3s infinite;
+}
+
+.spin {
+    animation: particle-spin 10s linear infinite;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 0, 0, 0.6);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--secondary);
+    border: 2px solid var(--secondary);
+    box-shadow: 0 0 15px rgba(0, 206, 201, 0.3);
+}
+
+.btn-secondary:hover {
+    background: rgba(0, 206, 201, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(0, 206, 201, 0.5);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 10px; }
+.mt-2 { margin-top: 20px; }
+.mt-3 { margin-top: 30px; }
+.mb-1 { margin-bottom: 10px; }
+.mb-2 { margin-bottom: 20px; }
+.mb-3 { margin-bottom: 30px; }
+.p-1 { padding: 10px; }
+.p-2 { padding: 20px; }
+.p-3 { padding: 30px; }
+
+</style>
+</head>
+<body class="cursor-default">
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">Vibro-X</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+        <div class="loading-text" id="loadingText">Initializing Platform...</div>
+    </div>
+
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <div class="gradient-bg"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <!-- Matrix Background -->
+    <div class="matrix-bg">
+        <canvas id="matrix-canvas"></canvas>
+    </div>
+
+    <!-- Particles Container -->
+    <div id="particles-js"></div>
+
+    <!-- Cursor System -->
+    <div class="cursor-container">
+        <div class="cursor-dot"></div>
+        <div class="cursor-outline"></div>
+    </div>
+    <div class="cursor-trail" id="cursorTrail"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <a href="#" class="logo" id="logoBtn">
+            <i class="fas fa-play-circle logo-icon"></i>
+            <span>Vibro-X</span>
+        </a>
+        
+        <div class="search-container">
+            <div class="search-bar" id="searchBar">
+                <input type="text" class="search-input" placeholder="Search videos..." id="searchInput">
+                <button class="search-button" id="searchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        
+        <button class="customize-toggle-btn btn btn-secondary" id="customizeToggleBtn">
+            <i class="fas fa-sliders-h"></i>
+            <span>Customize</span>
+        </button>
+        
+        <div class="user-avatar" id="userAvatar">
+            <img src="https://ui-avatars.com/api/?name=User&background=random" alt="User">
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <a href="#" class="sidebar-item active" id="homeBtn">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="sidebar-item" id="videosBtn">
+            <i class="fas fa-play-circle"></i>
+            <span>Videos</span>
+        </a>
+        <a href="#" class="sidebar-item" id="memoriesBtn">
+            <i class="fas fa-memory"></i>
+            <span>Memories</span>
+        </a>
+        <a href="#" class="sidebar-item" id="avatarsBtn">
+            <i class="fas fa-user-astronaut"></i>
+            <span>Avatars</span>
+        </a>
+        <a href="#" class="sidebar-item" id="effectsBtn">
+            <i class="fas fa-magic"></i>
+            <span>Effects</span>
+        </a>
+        <a href="#" class="sidebar-item" id="physicsBtn">
+            <i class="fas fa-atom"></i>
+            <span>Physics</span>
+        </a>
+        <a href="#" class="sidebar-item" id="soundBtn">
+            <i class="fas fa-volume-up"></i>
+            <span>Sound</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="main-content">
+            <!-- Home Section -->
+            <div id="homeSection" class="page-section active">
+                <h1 class="gradient-text neon">Welcome to Vibro-X</h1>
+                <p class="hero-subtitle">The ultimate platform combining immersive video sharing with 3D avatar memory worlds</p>
+                
+                <div class="hero-stats mt-3">
+                    <div class="stat-card">
+                        <div class="stat-number">40+</div>
+                        <div class="stat-label">Custom Cursors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Animations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">10</div>
+                        <div class="stat-label">Game Mechanics</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3D</div>
+                        <div class="stat-label">Avatars</div>
+                    </div>
+                </div>
+                
+                <div class="videos-grid" id="videosGrid">
+                    <!-- Videos will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Video Modal -->
+            <div class="video-modal" id="videoModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="close-modal" id="closeModalBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="video-player-container">
+                            <video class="video-player" id="modalVideo" controls playsinline></video>
+                            <div class="video-details">
+                                <h1 id="modalVideoTitle"></h1>
+                                <div class="video-actions">
+                                    <button class="btn-primary" id="likeBtn">
+                                        <i class="far fa-heart"></i>
+                                        <span>Like</span>
+                                    </button>
+                                    <button class="btn-secondary" id="shareBtn">
+                                        <i class="fas fa-share"></i>
+                                        <span>Share</span>
+                                    </button>
+                                    <button class="btn-secondary" id="avatarViewBtn">
+                                        <i class="fas fa-user-astronaut"></i>
+                                        <span>View Avatar</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="video-sidebar">
+                            <div class="avatar-viewer-container">
+                                <canvas id="modal-avatar-canvas"></canvas>
+                                <div class="avatar-controls">
+                                    <button class="avatar-btn" id="rotateAvatarBtn">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button class="avatar-btn" id="zoomInBtn">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                    <button class="avatar-btn" id="zoomOutBtn">
+                                        <i class="fas fa-search-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="video-description mt-2">
+                                <p id="modalVideoDescription"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Customization Panel -->
+    <div class="customization-panel" id="customizationPanel">
+        <div class="customization-header">
+            <h2 class="gradient-text">Customize Experience</h2>
+            <button class="btn btn-secondary" id="closeCustomizeBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Cursor Selector -->
+        <div class="customization-section">
+            <h3 class="section-title">
+                <i class="fas fa-mouse-pointer"></i>
+                <span>Cursor Style</span>
+            </h3>
+            <div class="cursor-grid" id="cursorGrid">
+                <!-- 40+ cursors will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Effects Selector -->
+        <div class="customization-section">
+            <h3 class="section-title">
+                <i class="fas fa-magic"></i>
+                <span>Visual Effects</span>
+            </h3>
+            <div class="slider-container">
+                <div class="slider-header">
+                    <span class="slider-label">Effects Intensity</span>
+                    <span class="slider-value" id="effectsValue">50%</span>
+                </div>
+                <input type="range" min="0" max="100" value="50" class="slider" id="effectsSlider">
+            </div>
+            <div class="effects-presets" id="effectsPresets">
+                <!-- Effect presets will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- 3D Avatar Customization -->
+        <div class="customization-section">
+            <h3 class="section-title">
+                <i class="fas fa-user-astronaut"></i>
+                <span>3D Avatar</span>
+            </h3>
+            <div class="avatar-viewer-container">
+                <canvas id="custom-avatar-canvas"></canvas>
+                <div class="avatar-controls">
+                    <button class="avatar-btn" id="customRotateBtn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="avatar-btn" id="customChangeBtn">
+                        <i class="fas fa-random"></i>
+                    </button>
+                    <button class="avatar-btn" id="customEffectBtn">
+                        <i class="fas fa-sparkles"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="avatar-options mt-2">
+                <div class="toggle-group">
+                    <span>Avatar Glow</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="avatarGlowToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span>Particles</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="avatarParticlesToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Physics Settings -->
+        <div class="customization-section">
+            <h3 class="section-title">
+                <i class="fas fa-atom"></i>
+                <span>Physics Mechanics</span>
+            </h3>
+            <div class="physics-controls" id="physicsControls">
+                <!-- Physics controls will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Sound Effects -->
+        <div class="customization-section">
+            <h3 class="section-title">
+                <i class="fas fa-volume-up"></i>
+                <span>Sound Effects</span>
+            </h3>
+            <div class="sound-board" id="soundBoard">
+                <!-- Sound pads will be loaded here -->
+            </div>
+            <div class="slider-container mt-2">
+                <div class="slider-header">
+                    <span class="slider-label">Volume</span>
+                    <span class="slider-value" id="volumeValue">70%</span>
+                </div>
+                <input type="range" min="0" max="100" value="70" class="slider" id="volumeSlider">
+            </div>
+        </div>
+        
+        <!-- Animation Settings -->
+        <div class="customization-section">
+            <h3 class="section-title">
+                <i class="fas fa-film"></i>
+                <span>Animations</span>
+            </h3>
+            <div class="slider-container">
+                <div class="slider-header">
+                    <span class="slider-label">Animation Speed</span>
+                    <span class="slider-value" id="animationValue">100%</span>
+                </div>
+                <input type="range" min="10" max="200" value="100" class="slider" id="animationSlider">
+            </div>
+            <div class="toggle-group mt-2">
+                <span>Enable Particle Effects</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="particleToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-group">
+                <span>Enable Background Effects</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="bgEffectsToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="customization-section">
+            <button class="btn btn-primary w-100" id="saveSettingsBtn">
+                <i class="fas fa-save"></i>
+                Save Settings
+            </button>
+            <button class="btn btn-secondary w-100 mt-2" id="resetSettingsBtn">
+                <i class="fas fa-redo"></i>
+                Reset to Default
+            </button>
+        </div>
+    </div>
+
+<script>
+// ============ GLOBAL STATE ============
+const state = {
+    currentCursor: 'cursor-default',
+    activeEffects: 50,
+    animationSpeed: 100,
+    volume: 70,
+    activePhysics: [],
+    activeSounds: [],
+    avatarScale: 1,
+    avatarRotation: 0,
+    particleEffects: true,
+    backgroundEffects: true,
+    avatarGlow: true,
+    avatarParticles: false,
+    selectedAvatar: null
+};
+
+// ============ INITIALIZATION ============
+document.addEventListener('DOMContentLoaded', async () => {
+    await initAllSystems();
+    setupEventListeners();
+    loadInitialData();
+});
+
+async function initAllSystems() {
+    await simulateLoading();
+    
+    // Initialize systems
+    initParticles();
+    initMatrixBackground();
+    initCursorSystem();
+    init3DAvatar();
+    initVideoModal();
+    initCustomizationPanel();
+    initSoundSystem();
+    initPhysicsSystem();
+    initEffectsSystem();
+    
+    // Hide loading screen
+    document.getElementById('loadingScreen').style.display = 'none';
+    console.log('✅ All systems initialized');
+}
+
+async function simulateLoading() {
+    const steps = [
+        {text: 'Loading 40+ custom cursors...', progress: 10},
+        {text: 'Initializing 500+ animations...', progress: 25},
+        {text: 'Setting up 3D avatar system...', progress: 40},
+        {text: 'Configuring physics mechanics...', progress: 55},
+        {text: 'Loading sound effects...', progress: 70},
+        {text: 'Preparing visual effects...', progress: 85},
+        {text: 'Finalizing platform...', progress: 95},
+        {text: 'Ready!', progress: 100}
+    ];
+    
+    for (const step of steps) {
+        document.getElementById('loadingProgress').style.width = step.progress + '%';
+        document.getElementById('loadingText').textContent = step.text;
+        await new Promise(resolve => setTimeout(resolve, 400));
+    }
+}
+
+// ============ PARTICLE BACKGROUND ============
+function initParticles() {
+    particlesJS('particles-js', {
+        particles: {
+            number: { value: 80, density: { enable: true, value_area: 800 } },
+            color: { value: "#ff0000" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1 } },
+            size: { value: 3, random: true, anim: { enable: true, speed: 2 } },
+            line_linked: {
+                enable: true,
+                distance: 150,
+                color: "#ff0000",
+                opacity: 0.2,
+                width: 1
+            },
+            move: {
+                enable: true,
+                speed: 2,
+                direction: "none",
+                random: true,
+                out_mode: "out",
+                bounce: false
+            }
+        },
+        interactivity: {
+            detect_on: "canvas",
+            events: {
+                onhover: { enable: true, mode: "repulse" },
+                onclick: { enable: true, mode: "push" },
+                resize: true
+            }
+        }
+    });
+}
+
+// ============ MATRIX BACKGROUND ============
+function initMatrixBackground() {
+    const canvas = document.getElementById('matrix-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const chars = "01";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+    
+    function draw() {
+        ctx.fillStyle = 'rgba(5, 5, 16, 0.04)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#00ff41';
+        ctx.font = `${fontSize}px monospace`;
+        
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+    
+    function animate() {
+        draw();
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+}
+
+// ============ CURSOR SYSTEM (40+ CURSORS) ============
+function initCursorSystem() {
+    const cursorClasses = [
+        'cursor-default', 'cursor-tech', 'cursor-game', 'cursor-neon', 'cursor-matrix',
+        'cursor-physics', 'cursor-hologram', 'cursor-particle', 'cursor-wireframe',
+        'cursor-digital', 'cursor-cyber', 'cursor-orb', 'cursor-quantum', 'cursor-neural',
+        'cursor-grid', 'cursor-target', 'cursor-binary', 'cursor-energy', 'cursor-warp',
+        'cursor-data', 'cursor-crystal', 'cursor-radar', 'cursor-galaxy', 'cursor-nebula',
+        'cursor-time', 'cursor-fractal', 'cursor-circuit', 'cursor-hive', 'cursor-dna',
+        'cursor-magnetic', 'cursor-sonic', 'cursor-laser', 'cursor-tesla', 'cursor-pyramid',
+        'cursor-vortex', 'cursor-ai', 'cursor-cybercore', 'cursor-neonpulse', 'cursor-quantumfield',
+        'cursor-digitalscan', 'cursor-atomic', 'cursor-neuro', 'cursor-hyperdrive', 'cursor-chronos',
+        'cursor-singularity'
+    ];
+    
+    const cursorGrid = document.getElementById('cursorGrid');
+    cursorGrid.innerHTML = '';
+    
+    cursorClasses.forEach(cursorClass => {
+        const cursorOption = document.createElement('div');
+        cursorOption.className = 'cursor-option';
+        cursorOption.dataset.cursor = cursorClass;
+        cursorOption.innerHTML = `
+            <i class="fas fa-mouse-pointer"></i>
+            <span class="cursor-name">${cursorClass.replace('cursor-', '')}</span>
+        `;
+        
+        cursorOption.addEventListener('click', () => {
+            applyCursor(cursorClass);
+            document.querySelectorAll('.cursor-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            cursorOption.classList.add('selected');
+        });
+        
+        cursorGrid.appendChild(cursorOption);
+    });
+    
+    // Apply default cursor
+    document.querySelector('.cursor-option[data-cursor="cursor-default"]').classList.add('selected');
+    
+    // Setup cursor trail
+    document.addEventListener('mousemove', (e) => {
+        const trail = document.getElementById('cursorTrail');
+        if (trail) {
+            trail.style.left = e.clientX + 'px';
+            trail.style.top = e.clientY + 'px';
+        }
+    });
+}
+
+function applyCursor(cursorClass) {
+    // Remove all cursor classes
+    document.body.className = document.body.className.replace(/cursor-\S+/g, '');
+    document.body.classList.add(cursorClass);
+    state.currentCursor = cursorClass;
+    
+    // Update cursor trail style
+    updateCursorTrail();
+}
+
+function updateCursorTrail() {
+    const trail = document.getElementById('cursorTrail');
+    if (!trail) return;
+    
+    const colors = {
+        'cursor-neon': 'var(--ex-cyberpunk-pink)',
+        'cursor-matrix': 'var(--ex-matrix-green)',
+        'cursor-quantum': 'var(--ex-secondary)',
+        'cursor-cyber': 'var(--ex-cyberpunk-blue)',
+        'default': 'var(--primary)'
+    };
+    
+    trail.style.background = `radial-gradient(circle, ${colors[state.currentCursor] || colors.default}, transparent)`;
+    trail.style.boxShadow = state.currentCursor.includes('neon') ? '0 0 15px var(--ex-cyberpunk-pink)' : '';
+}
+
+// ============ 3D AVATAR SYSTEM ============
+function init3DAvatar() {
+    initAvatarCanvas('custom-avatar-canvas');
+    initAvatarCanvas('modal-avatar-canvas');
+}
+
+function initAvatarCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || typeof THREE === 'undefined') return;
+    
+    try {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+        renderer.setClearColor(0x000000, 0);
+        canvas.appendChild(renderer.domElement);
+        
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+        
+        // Create avatar
+        const avatar = createAvatar();
+        scene.add(avatar);
+        
+        camera.position.z = 5;
+        
+        // Store references
+        canvas.scene = scene;
+        canvas.camera = camera;
+        canvas.renderer = renderer;
+        canvas.avatar = avatar;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            avatar.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+        });
+        
+    } catch (error) {
+        console.warn('Three.js initialization failed:', error);
+        createFallbackAvatar(canvas);
+    }
+}
+
+function createAvatar() {
+    const group = new THREE.Group();
+    
+    // Head
+    const headGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const headMaterial = new THREE.MeshPhongMaterial({ 
+        color: 0x6c5ce7,
+        shininess: 100 
+    });
+    const head = new THREE.Mesh(headGeometry, headMaterial);
+    head.position.y = 2.5;
+    group.add(head);
+    
+    // Body
+    const bodyGeometry = new THREE.CylinderGeometry(0.8, 0.6, 2, 32);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ 
+        color: 0x0984e3,
+        shininess: 80 
+    });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.position.y = 0.5;
+    group.add(body);
+    
+    // Arms
+    const armGeometry = new THREE.CylinderGeometry(0.2, 0.2, 1.5, 16);
+    const armMaterial = new THREE.MeshPhongMaterial({ color: 0x00cec9 });
+    
+    const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+    leftArm.position.set(-1.2, 1, 0);
+    leftArm.rotation.z = Math.PI / 6;
+    group.add(leftArm);
+    
+    const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+    rightArm.position.set(1.2, 1, 0);
+    rightArm.rotation.z = -Math.PI / 6;
+    group.add(rightArm);
+    
+    // Legs
+    const legGeometry = new THREE.CylinderGeometry(0.25, 0.2, 2, 16);
+    const legMaterial = new THREE.MeshPhongMaterial({ color: 0xfd79a8 });
+    
+    const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+    leftLeg.position.set(-0.4, -1.5, 0);
+    group.add(leftLeg);
+    
+    const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+    rightLeg.position.set(0.4, -1.5, 0);
+    group.add(rightLeg);
+    
+    return group;
+}
+
+function createFallbackAvatar(canvas) {
+    canvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(108,92,231,0.2) 0%, rgba(0,0,0,0) 70%);">
+            <div style="width: 200px; height: 300px; position: relative;">
+                <!-- Avatar fallback representation -->
+                <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: linear-gradient(135deg, var(--ex-primary), var(--ex-secondary)); border-radius: 50%;"></div>
+                <div style="position: absolute; top: 80px; left: 50%; transform: translateX(-50%); width: 100px; height: 150px; background: linear-gradient(to bottom, var(--ex-tech-blue), var(--ex-tech-purple)); border-radius: 20px;"></div>
+                <div style="position: absolute; top: 100px; left: 30%; width: 20px; height: 100px; background: var(--ex-primary); border-radius: 10px;"></div>
+                <div style="position: absolute; top: 100px; left: 70%; width: 20px; height: 100px; background: var(--ex-primary); border-radius: 10px;"></div>
+                <div style="position: absolute; top: 230px; left: 40%; width: 20px; height: 70px; background: var(--ex-secondary); border-radius: 10px;"></div>
+                <div style="position: absolute; top: 230px; left: 60%; width: 20px; height: 70px; background: var(--ex-secondary); border-radius: 10px;"></div>
+            </div>
+        </div>
+    `;
+}
+
+// ============ VIDEO MODAL ============
+function initVideoModal() {
+    const modal = document.getElementById('videoModal');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const video = document.getElementById('modalVideo');
+    
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('show');
+        video.pause();
+    });
+    
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            modal.classList.remove('show');
+            video.pause();
+        }
+    });
+    
+    // Avatar view button
+    document.getElementById('avatarViewBtn').addEventListener('click', () => {
+        const avatarCanvas = document.getElementById('modal-avatar-canvas');
+        if (avatarCanvas && avatarCanvas.avatar) {
+            avatarCanvas.avatar.rotation.y += Math.PI / 2;
+        }
+    });
+}
+
+// ============ CUSTOMIZATION PANEL ============
+function initCustomizationPanel() {
+    const panel = document.getElementById('customizationPanel');
+    const toggleBtn = document.getElementById('customizeToggleBtn');
+    const closeBtn = document.getElementById('closeCustomizeBtn');
+    
+    toggleBtn.addEventListener('click', () => {
+        panel.classList.toggle('active');
+    });
+    
+    closeBtn.addEventListener('click', () => {
+        panel.classList.remove('active');
+    });
+    
+    // Avatar controls
+    document.getElementById('customRotateBtn').addEventListener('click', () => {
+        const avatarCanvas = document.getElementById('custom-avatar-canvas');
+        if (avatarCanvas && avatarCanvas.avatar) {
+            avatarCanvas.avatar.rotation.y += Math.PI / 4;
+        }
+    });
+    
+    document.getElementById('customChangeBtn').addEventListener('click', () => {
+        changeAvatarColor();
+    });
+    
+    document.getElementById('customEffectBtn').addEventListener('click', () => {
+        createParticleBurst(50, 'avatar');
+    });
+    
+    // Sliders
+    document.getElementById('effectsSlider').addEventListener('input', (e) => {
+        state.activeEffects = e.target.value;
+        document.getElementById('effectsValue').textContent = `${state.activeEffects}%`;
+        updateEffects();
+    });
+    
+    document.getElementById('animationSlider').addEventListener('input', (e) => {
+        state.animationSpeed = e.target.value;
+        document.getElementById('animationValue').textContent = `${state.animationSpeed}%`;
+        updateAnimationSpeed();
+    });
+    
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+        state.volume = e.target.value;
+        document.getElementById('volumeValue').textContent = `${state.volume}%`;
+    });
+    
+    // Toggles
+    document.getElementById('avatarGlowToggle').addEventListener('change', (e) => {
+        state.avatarGlow = e.target.checked;
+    });
+    
+    document.getElementById('avatarParticlesToggle').addEventListener('change', (e) => {
+        state.avatarParticles = e.target.checked;
+    });
+    
+    document.getElementById('particleToggle').addEventListener('change', (e) => {
+        state.particleEffects = e.target.checked;
+    });
+    
+    document.getElementById('bgEffectsToggle').addEventListener('change', (e) => {
+        state.backgroundEffects = e.target.checked;
+        document.querySelector('.background-effects').style.display = 
+            state.backgroundEffects ? 'block' : 'none';
+    });
+    
+    // Save/Reset buttons
+    document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+    document.getElementById('resetSettingsBtn').addEventListener('click', resetSettings);
+}
+
+// ============ SOUND SYSTEM ============
+function initSoundSystem() {
+    const soundBoard = document.getElementById('soundBoard');
+    const sounds = [
+        {name: 'Neural', icon: 'fas fa-brain', color: 'var(--ex-tech-blue)'},
+        {name: 'Quantum', icon: 'fas fa-atom', color: 'var(--ex-secondary)'},
+        {name: 'Cyber', icon: 'fas fa-bolt', color: 'var(--ex-cyberpunk-pink)'},
+        {name: 'Matrix', icon: 'fas fa-code', color: 'var(--ex-matrix-green)'},
+        {name: 'Hologram', icon: 'fas fa-hologram', color: 'var(--ex-tech-purple)'},
+        {name: 'Click', icon: 'fas fa-mouse-pointer', color: 'var(--primary)'},
+        {name: 'Confirm', icon: 'fas fa-check', color: 'var(--success)'},
+        {name: 'Error', icon: 'fas fa-times', color: 'var(--danger)'}
+    ];
+    
+    sounds.forEach(sound => {
+        const pad = document.createElement('div');
+        pad.className = 'sound-pad';
+        pad.innerHTML = `
+            <i class="${sound.icon}"></i>
+            <span>${sound.name}</span>
+        `;
+        pad.style.borderColor = sound.color;
+        
+        pad.addEventListener('click', () => {
+            playSound(sound.name.toLowerCase());
+            pad.classList.add('active');
+            setTimeout(() => pad.classList.remove('active'), 300);
+        });
+        
+        soundBoard.appendChild(pad);
+    });
+}
+
+function playSound(type) {
+    // Simple sound simulation
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Set frequency based on sound type
+    const frequencies = {
+        neural: 220,
+        quantum: 440,
+        cyber: 880,
+        matrix: 1760,
+        hologram: 293.66,
+        click: 800,
+        confirm: 1200,
+        error: 200
+    };
+    
+    oscillator.frequency.value = frequencies[type] || 440;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.3);
+    
+    // Visual feedback
+    createParticleBurst(15, type);
+}
+
+// ============ PHYSICS SYSTEM ============
+function initPhysicsSystem() {
+    const physicsControls = document.getElementById('physicsControls');
+    const mechanics = [
+        {name: 'Gravity', icon: 'fas fa-globe-americas'},
+        {name: 'Magnetism', icon: 'fas fa-magnet'},
+        {name: 'Fluid', icon: 'fas fa-water'},
+        {name: 'Particles', icon: 'fas fa-atom'},
+        {name: 'Spring', icon: 'fas fa-expand-alt'},
+        {name: 'Collision', icon: 'fas fa-car-crash'},
+        {name: 'Ragdoll', icon: 'fas fa-running'},
+        {name: 'Cloth', icon: 'fas fa-tshirt'},
+        {name: 'Destruction', icon: 'fas fa-bomb'},
+        {name: 'Quantum', icon: 'fas fa-door-open'}
+    ];
+    
+    mechanics.forEach(mechanic => {
+        const control = document.createElement('div');
+        control.className = 'physics-control';
+        control.innerHTML = `
+            <i class="${mechanic.icon}"></i>
+            <span>${mechanic.name}</span>
+        `;
+        
+        control.addEventListener('click', () => {
+            togglePhysicsMechanic(mechanic.name.toLowerCase());
+            control.classList.toggle('active');
+            createParticleBurst(20, 'physics');
+        });
+        
+        physicsControls.appendChild(control);
+    });
+}
+
+function togglePhysicsMechanic(mechanic) {
+    const index = state.activePhysics.indexOf(mechanic);
+    if (index > -1) {
+        state.activePhysics.splice(index, 1);
+    } else {
+        state.activePhysics.push(mechanic);
+    }
+}
+
+// ============ EFFECTS SYSTEM ============
+function initEffectsSystem() {
+    const effectsPresets = document.getElementById('effectsPresets');
+    const presets = [
+        {name: 'Neural', desc: 'Brainwave patterns', color: 'var(--ex-tech-blue)'},
+        {name: 'Quantum', desc: 'Particle effects', color: 'var(--ex-secondary)'},
+        {name: 'Cyberpunk', desc: 'Neon glitch', color: 'var(--ex-cyberpunk-pink)'},
+        {name: 'Matrix', desc: 'Digital rain', color: 'var(--ex-matrix-green)'},
+        {name: 'Hologram', desc: '3D projection', color: 'var(--ex-tech-purple)'},
+        {name: 'Glitch', desc: 'Data corruption', color: 'var(--ex-tech-red)'},
+        {name: 'Energy', desc: 'Power surges', color: 'var(--ex-tech-yellow)'},
+        {name: 'Warp', desc: 'Space distortion', color: 'var(--ex-tech-purple)'}
+    ];
+    
+    presets.forEach(preset => {
+        const btn = document.createElement('div');
+        btn.className = 'preset-btn';
+        btn.innerHTML = `
+            <div class="preset-name">${preset.name}</div>
+            <div class="preset-desc">${preset.desc}</div>
+        `;
+        btn.style.borderColor = preset.color;
+        
+        btn.addEventListener('click', () => {
+            applyEffectPreset(preset.name.toLowerCase());
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            createParticleBurst(30, 'effect');
+        });
+        
+        effectsPresets.appendChild(btn);
+    });
+}
+
+function applyEffectPreset(preset) {
+    // Apply visual effect
+    const effectTypes = {
+        neural: 'neural-pulse',
+        quantum: 'quantum-field',
+        cyberpunk: 'cyber-grid',
+        matrix: 'matrix-rain',
+        hologram: 'hologram-scan',
+        glitch: 'glitch',
+        energy: 'energy-wave',
+        warp: 'warp-tunnel'
+    };
+    
+    const effect = effectTypes[preset];
+    if (effect) {
+        document.body.classList.add(effect);
+        setTimeout(() => document.body.classList.remove(effect), 2000);
+    }
+}
+
+function updateEffects() {
+    // Update effects based on intensity
+    const intensity = state.activeEffects / 100;
+    document.body.style.filter = `
+        brightness(${0.8 + intensity * 0.4})
+        contrast(${0.9 + intensity * 0.2})
+        saturate(${0.9 + intensity * 0.3})
+    `;
+}
+
+function updateAnimationSpeed() {
+    const speed = state.animationSpeed / 100;
+    document.querySelectorAll('*').forEach(el => {
+        const computedStyle = getComputedStyle(el);
+        const animationName = computedStyle.animationName;
+        if (animationName !== 'none') {
+            const duration = parseFloat(computedStyle.animationDuration) || 1;
+            el.style.animationDuration = `${duration / speed}s`;
+        }
+    });
+}
+
+// ============ UTILITY FUNCTIONS ============
+function createParticleBurst(count, type) {
+    if (!state.particleEffects) return;
+    
+    const colors = {
+        avatar: ['var(--ex-accent)', 'var(--ex-primary)', 'var(--ex-secondary)'],
+        physics: ['var(--ex-tech-orange)', 'var(--ex-tech-yellow)', 'var(--ex-tech-red)'],
+        effect: ['var(--ex-cyberpunk-pink)', 'var(--ex-cyberpunk-blue)', 'var(--ex-cyberpunk-yellow)'],
+        default: ['var(--primary)', 'var(--secondary)', 'var(--accent-1)']
+    };
+    
+    const colorSet = colors[type] || colors.default;
+    
+    for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.left = '50%';
+        particle.style.top = '50%';
+        particle.style.width = Math.random() * 10 + 5 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        particle.style.background = colorSet[Math.floor(Math.random() * colorSet.length)];
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '9996';
+        particle.style.transform = 'translate(-50%, -50%)';
+        
+        document.body.appendChild(particle);
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 50 + Math.random() * 100;
+        const targetX = Math.cos(angle) * distance;
+        const targetY = Math.sin(angle) * distance;
+        
+        particle.animate([
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+            { transform: `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0)`, opacity: 0 }
+        ], {
+            duration: 800 + Math.random() * 400,
+            easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+        }).onfinish = () => particle.remove();
+    }
+}
+
+function changeAvatarColor() {
+    const avatarCanvas = document.getElementById('custom-avatar-canvas');
+    if (!avatarCanvas || !avatarCanvas.avatar) return;
+    
+    const colors = [
+        0x6c5ce7, 0x0984e3, 0x00cec9, 0xfd79a8,
+        0x00b894, 0xa29bfe, 0xff7675, 0xfdcb6e
+    ];
+    
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+    // Change head color
+    avatarCanvas.avatar.children[0].material.color.setHex(randomColor);
+    createParticleBurst(20, 'avatar');
+}
+
+function saveSettings() {
+    localStorage.setItem('vibro-x-settings', JSON.stringify(state));
+    createParticleBurst(30, 'effect');
+    alert('Settings saved!');
+}
+
+function resetSettings() {
+    if (confirm('Reset all settings to default?')) {
+        localStorage.removeItem('vibro-x-settings');
+        location.reload();
+    }
+}
+
+function loadInitialData() {
+    const savedSettings = localStorage.getItem('vibro-x-settings');
+    if (savedSettings) {
+        Object.assign(state, JSON.parse(savedSettings));
+        
+        // Apply saved settings
+        document.getElementById('effectsSlider').value = state.activeEffects;
+        document.getElementById('effectsValue').textContent = `${state.activeEffects}%`;
+        document.getElementById('animationSlider').value = state.animationSpeed;
+        document.getElementById('animationValue').textContent = `${state.animationSpeed}%`;
+        document.getElementById('volumeSlider').value = state.volume;
+        document.getElementById('volumeValue').textContent = `${state.volume}%`;
+        document.getElementById('avatarGlowToggle').checked = state.avatarGlow;
+        document.getElementById('avatarParticlesToggle').checked = state.avatarParticles;
+        document.getElementById('particleToggle').checked = state.particleEffects;
+        document.getElementById('bgEffectsToggle').checked = state.backgroundEffects;
+        
+        applyCursor(state.currentCursor);
+        updateEffects();
+        updateAnimationSpeed();
+    }
+}
+
+// ============ EVENT LISTENERS ============
+function setupEventListeners() {
+    // Mobile menu toggle
+    document.getElementById('mobileMenuToggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('visible');
+    });
+    
+    // Sidebar navigation
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show corresponding section
+            const sectionId = this.id.replace('Btn', 'Section');
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId)?.classList.add('active');
+        });
+    });
+    
+    // Search
+    document.getElementById('searchButton').addEventListener('click', handleSearch);
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSearch();
+    });
+    
+    // Demo video click
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.video-card')) {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('modalVideo');
+            
+            // Set video source (demo)
+            video.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+            document.getElementById('modalVideoTitle').textContent = 'Demo Video - Big Buck Bunny';
+            document.getElementById('modalVideoDescription').textContent = 'A demo video showing the capabilities of Vibro-X platform with 3D avatar integration.';
+            
+            modal.classList.add('show');
+            video.play();
+            
+            // Create particle effect
+            createParticleBurst(50, 'effect');
+        }
+    });
+    
+    // Handle clicks for sound
+    document.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+            playSound('click');
+        }
+    });
+}
+
+function handleSearch() {
+    const query = document.getElementById('searchInput').value;
+    if (query.trim()) {
+        createParticleBurst(30, 'effect');
+        alert(`Searching for: ${query}`);
+    }
+}
+
+// ============ WINDOW RESIZE ============
+window.addEventListener('resize', () => {
+    // Handle responsive adjustments
+    const sidebar = document.getElementById('sidebar');
+    if (window.innerWidth < 768) {
+        sidebar.classList.remove('visible');
+    }
+});
+</script>
+</body>
+</html>
