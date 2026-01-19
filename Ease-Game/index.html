@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proto - EASE Game</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        #gameContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        canvas {
+            display: block;
+            background: #000;
+        }
+        
+        .ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .panel {
+            position: absolute;
+            background: rgba(0, 20, 40, 0.8);
+            border: 2px solid #0af;
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            pointer-events: auto;
+        }
+        
+        #stats {
+            top: 20px;
+            left: 20px;
+            min-width: 200px;
+        }
+        
+        #blocks {
+            top: 20px;
+            right: 20px;
+            width: 320px;
+        }
+        
+        #controls {
+            bottom: 20px;
+            left: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        #messages {
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(0, 100, 255, 0.2);
+            border-radius: 5px;
+        }
+        
+        .blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .block {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .block:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px currentColor;
+        }
+        
+        .block.hidden { background: #2c3e50; }
+        .block.power { background: linear-gradient(45deg, #9b59b6, #8e44ad); }
+        .block.fake { background: linear-gradient(45deg, #e74c3c, #c0392b); }
+        .block.revealed { background: linear-gradient(45deg, #2ecc71, #27ae60); }
+        
+        button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 12px;
+            animation: fadeIn 0.3s;
+        }
+        
+        .message.error { border-left: 3px solid #e74c3c; }
+        .message.success { border-left: 3px solid #2ecc71; }
+        .message.warning { border-left: 3px solid #f39c12; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #title {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #0af;
+            text-shadow: 0 0 10px #0af;
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        #gameOver {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #0af;
+            text-align: center;
+            z-index: 100;
+            display: none;
+        }
+        
+        #gameOver h2 {
+            color: #0af;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        
+        #help {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 20, 40, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #0af;
+            font-size: 12px;
+            text-align: center;
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    
+    <div class="ui">
+        <div id="title">PROTO - EASE</div>
+        
+        <div class="panel" id="stats">
+            <h3>PLAYER STATS</h3>
+            <div class="stat"><span>Health:</span><span id="health">100</span></div>
+            <div class="stat"><span>Power:</span><span id="power">0%</span></div>
+            <div class="stat"><span>Block Pieces:</span><span id="pieces">0%</span></div>
+            <div class="stat"><span>Games Won:</span><span id="wins">0</span></div>
+            <div class="stat"><span>Blocks Found:</span><span id="found">0/40</span></div>
+        </div>
+        
+        <div class="panel" id="blocks">
+            <h3>BLOCKS (Click or press SPACE)</h3>
+            <div class="blocks-grid" id="blocksGrid"></div>
+            <div style="margin-top: 10px; font-size: 12px; color: #aaa;">
+                ⚡ 2 Power Blocks | 💀 38 Fake Blocks
+            </div>
+        </div>
+        
+        <div class="panel" id="controls">
+            <button id="btnPower">USE POWER (P)</button>
+            <button id="btnReset">RESET GAME (R)</button>
+            <button id="btnBoss" disabled>FIGHT BOSS (B)</button>
+            <button id="btnWin" onclick="game.cheatWin()">CHEAT WIN (DEBUG)</button>
+        </div>
+        
+        <div class="panel" id="messages">
+            <h3>GAME LOG</h3>
+            <div id="messageList"></div>
+        </div>
+        
+        <div id="help">
+            WASD: Move | SPACE: Select Block | P: Power | R: Reset | B: Boss (after win)
+        </div>
+    </div>
+    
+    <div id="gameOver">
+        <h2 id="gameOverTitle">GAME OVER</h2>
+        <p id="gameOverText"></p>
+        <button onclick="game.resetGame()" style="margin-top: 20px;">PLAY AGAIN</button>
+    </div>
+
+    <script>
+        // GAME ENGINE - NO LOADING SCREEN
+        class Game {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                
+                // Game state
+                this.state = {
+                    blocks: [],
+                    player: {
+                        x: 0,
+                        y: 0,
+                        health: 100,
+                        power: 0,
+                        pieces: 0,
+                        wins: 0
+                    },
+                    revealed: 0,
+                    powerFound: 0,
+                    active: true,
+                    camera: { x: 0, y: 0 }
+                };
+                
+                this.particles = [];
+                this.effects = [];
+                this.keys = {};
+                this.messages = [];
+                
+                // Initialize immediately
+                this.initGame();
+                this.setupEvents();
+                this.gameLoop();
+                
+                // Add welcome message
+                this.addMessage("Welcome to EASE!", "success");
+                this.addMessage("Find 2 power blocks to win!", "warning");
+                this.addMessage("Click blocks or press SPACE", "warning");
+            }
+            
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            
+            initGame() {
+                // Create 40 blocks (2 power, 38 fake)
+                this.state.blocks = [];
+                
+                // Power blocks
+                for (let i = 0; i < 2; i++) {
+                    this.state.blocks.push({
+                        id: i,
+                        type: 'power',
+                        revealed: false,
+                        x: (Math.random() - 0.5) * 40,
+                        y: (Math.random() - 0.5) * 40,
+                        glow: 0
+                    });
+                }
+                
+                // Fake blocks
+                for (let i = 2; i < 40; i++) {
+                    this.state.blocks.push({
+                        id: i,
+                        type: 'fake',
+                        revealed: false,
+                        x: (Math.random() - 0.5) * 40,
+                        y: (Math.random() - 0.5) * 40,
+                        damage: Math.floor(Math.random() * 20) + 10,
+                        killAnim: this.randomAnim()
+                    });
+                }
+                
+                // Shuffle
+                this.shuffle(this.state.blocks);
+                
+                // Update UI
+                this.updateUI();
+            }
+            
+            randomAnim() {
+                const anims = ['Explode', 'Disintegrate', 'Freeze', 'Burn', 'Vanish', 'Implode', 'Shred', 'Melt'];
+                return anims[Math.floor(Math.random() * anims.length)];
+            }
+            
+            shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+            
+            setupEvents() {
+                // Keyboard
+                window.addEventListener('keydown', (e) => {
+                    this.keys[e.key.toLowerCase()] = true;
+                    
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                        this.selectBlock();
+                    } else if (e.key === 'p') {
+                        this.usePower();
+                    } else if (e.key === 'r') {
+                        this.resetGame();
+                    } else if (e.key === 'b') {
+                        this.fightBoss();
+                    } else if (e.key === 'w' && e.ctrlKey) {
+                        this.cheatWin();
+                    }
+                });
+                
+                window.addEventListener('keyup', (e) => {
+                    this.keys[e.key.toLowerCase()] = false;
+                });
+                
+                // Mouse
+                window.addEventListener('click', (e) => {
+                    const blockEl = e.target.closest('.block');
+                    if (blockEl && blockEl.classList.contains('hidden')) {
+                        const id = parseInt(blockEl.dataset.id);
+                        this.revealBlock(id);
+                    }
+                });
+                
+                // Resize
+                window.addEventListener('resize', () => this.resize());
+                
+                // UI buttons
+                document.getElementById('btnPower').addEventListener('click', () => this.usePower());
+                document.getElementById('btnReset').addEventListener('click', () => this.resetGame());
+                document.getElementById('btnBoss').addEventListener('click', () => this.fightBoss());
+            }
+            
+            updatePlayer() {
+                const speed = 5;
+                if (this.keys['w']) this.state.player.y -= speed;
+                if (this.keys['s']) this.state.player.y += speed;
+                if (this.keys['a']) this.state.player.x -= speed;
+                if (this.keys['d']) this.state.player.x += speed;
+                
+                // Follow player with camera
+                this.state.camera.x += (this.state.player.x - this.state.camera.x) * 0.1;
+                this.state.camera.y += (this.state.player.y - this.state.camera.y) * 0.1;
+                
+                // Regenerate power
+                if (this.state.active && this.state.powerFound > 0) {
+                    this.state.player.power = Math.min(100, this.state.player.power + 0.1);
+                }
+                
+                // Update power button
+                document.getElementById('btnPower').disabled = this.state.player.power < 100;
+            }
+            
+            selectBlock() {
+                if (!this.state.active) return;
+                
+                const hidden = this.state.blocks.filter(b => !b.revealed);
+                if (hidden.length === 0) return;
+                
+                const random = hidden[Math.floor(Math.random() * hidden.length)];
+                const id = this.state.blocks.indexOf(random);
+                this.revealBlock(id);
+            }
+            
+            revealBlock(id) {
+                if (!this.state.active) return;
+                
+                const block = this.state.blocks[id];
+                if (!block || block.revealed) return;
+                
+                block.revealed = true;
+                this.state.revealed++;
+                
+                // Effect
+                this.createExplosion(block.x, block.y, block.type === 'power' ? '#9b59b6' : '#e74c3c');
+                
+                if (block.type === 'power') {
+                    // POWER BLOCK FOUND
+                    this.state.powerFound++;
+                    this.state.player.pieces++;
+                    
+                    this.addMessage(`⚡ POWER BLOCK FOUND! +1% piece`, "success");
+                    this.playSound('win');
+                    
+                    if (this.state.powerFound === 2) {
+                        this.winGame();
+                    }
+                } else {
+                    // FAKE BLOCK
+                    this.state.player.health -= block.damage;
+                    
+                    this.addMessage(`💀 FAKE BLOCK! -${block.damage}HP (${block.killAnim})`, "error");
+                    this.playSound('damage');
+                    
+                    // Damage effect
+                    for (let i = 0; i < block.damage; i++) {
+                        this.createParticle(
+                            this.state.player.x,
+                            this.state.player.y,
+                            '#ff0000',
+                            Math.random() * 3 + 1
+                        );
+                    }
+                    
+                    if (this.state.player.health <= 0) {
+                        this.state.player.health = 0;
+                        this.gameOver();
+                    }
+                }
+                
+                this.updateUI();
+            }
+            
+            usePower() {
+                if (this.state.player.power < 100) {
+                    this.addMessage("Power not fully charged!", "error");
+                    return;
+                }
+                
+                if (this.state.powerFound === 0) {
+                    this.addMessage("Find power blocks first!", "error");
+                    return;
+                }
+                
+                // Use power
+                this.state.player.power = 0;
+                
+                // Power effect
+                for (let i = 0; i < 50; i++) {
+                    this.createParticle(
+                        this.state.player.x,
+                        this.state.player.y,
+                        '#ffff00',
+                        Math.random() * 4 + 2
+                    );
+                }
+                
+                this.addMessage("⚡ POWER ACTIVATED! Energy blast!", "success");
+                this.playSound('power');
+                
+                this.updateUI();
+            }
+            
+            fightBoss() {
+                if (!this.state.active || this.state.player.wins === 0) {
+                    this.addMessage("Win the game first!", "error");
+                    return;
+                }
+                
+                const bossDmg = Math.floor(Math.random() * 25) + 10;
+                const playerDmg = Math.floor(Math.random() * 40) + 20;
+                
+                this.state.player.health -= bossDmg;
+                
+                this.addMessage(`⚔️ BOSS FIGHT! You dealt ${playerDmg}, took ${bossDmg} damage`, "warning");
+                
+                // Boss effect
+                for (let i = 0; i < 30; i++) {
+                    this.createParticle(
+                        this.state.player.x + 20,
+                        this.state.player.y,
+                        '#ff0000',
+                        Math.random() * 5 + 2
+                    );
+                }
+                
+                if (this.state.player.health <= 0) {
+                    this.state.player.health = 0;
+                    this.gameOver();
+                }
+                
+                this.updateUI();
+            }
+            
+            winGame() {
+                this.state.active = false;
+                this.state.player.wins++;
+                this.state.player.power = 100;
+                
+                // Enable boss button
+                document.getElementById('btnBoss').disabled = false;
+                
+                // Celebration
+                for (let i = 0; i < 100; i++) {
+                    setTimeout(() => {
+                        this.createParticle(
+                            this.state.player.x,
+                            this.state.player.y,
+                            `hsl(${Math.random() * 360}, 100%, 50%)`,
+                            Math.random() * 5 + 2
+                        );
+                    }, i * 30);
+                }
+                
+                this.addMessage("🏆 VICTORY! Both power blocks found!", "success");
+                this.addMessage("Power fully charged! Boss fight unlocked!", "warning");
+                this.playSound('win');
+                
+                this.showGameOver("VICTORY!", "You found all power blocks! Boss fight unlocked!");
+            }
+            
+            gameOver() {
+                this.state.active = false;
+                this.addMessage("💀 GAME OVER! Click Reset to try again.", "error");
+                this.playSound('damage');
+                
+                this.showGameOver("GAME OVER", "You ran out of health! Click Play Again to retry.");
+            }
+            
+            showGameOver(title, text) {
+                document.getElementById('gameOverTitle').textContent = title;
+                document.getElementById('gameOverText').textContent = text;
+                document.getElementById('gameOver').style.display = 'block';
+            }
+            
+            resetGame() {
+                this.state.player = {
+                    x: 0, y: 0,
+                    health: 100,
+                    power: 0,
+                    pieces: 0,
+                    wins: this.state.player.wins
+                };
+                this.state.revealed = 0;
+                this.state.powerFound = 0;
+                this.state.active = true;
+                this.state.camera = { x: 0, y: 0 };
+                
+                document.getElementById('btnBoss').disabled = true;
+                document.getElementById('gameOver').style.display = 'none';
+                
+                this.particles = [];
+                this.effects = [];
+                
+                this.initGame();
+                this.addMessage("Game reset! Find those power blocks!", "warning");
+            }
+            
+            cheatWin() {
+                this.state.powerFound = 2;
+                this.winGame();
+                this.addMessage("Cheat activated!", "warning");
+            }
+            
+            // Visual effects
+            createParticle(x, y, color, size) {
+                this.particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8 - 2,
+                    color,
+                    size,
+                    life: 1,
+                    decay: Math.random() * 0.02 + 0.01
+                });
+            }
+            
+            createExplosion(x, y, color) {
+                for (let i = 0; i < 20; i++) {
+                    this.createParticle(x, y, color, Math.random() * 3 + 1);
+                }
+            }
+            
+            updateParticles() {
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.1;
+                    p.life -= p.decay;
+                    
+                    if (p.life <= 0) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+            }
+            
+            // Drawing
+            draw() {
+                // Clear
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Save context
+                this.ctx.save();
+                
+                // Center camera on player
+                const cx = this.canvas.width / 2 - this.state.camera.x;
+                const cy = this.canvas.height / 2 - this.state.camera.y;
+                this.ctx.translate(cx, cy);
+                
+                // Draw grid
+                this.drawGrid();
+                
+                // Draw blocks
+                this.drawBlocks();
+                
+                // Draw player
+                this.drawPlayer();
+                
+                // Draw particles
+                this.drawParticles();
+                
+                // Restore context
+                this.ctx.restore();
+                
+                // Draw UI overlays
+                this.drawUI();
+            }
+            
+            drawGrid() {
+                this.ctx.strokeStyle = 'rgba(0, 100, 255, 0.1)';
+                this.ctx.lineWidth = 1;
+                
+                const gridSize = 50;
+                const startX = Math.floor((-this.state.camera.x - this.canvas.width) / gridSize) * gridSize;
+                const startY = Math.floor((-this.state.camera.y - this.canvas.height) / gridSize) * gridSize;
+                const endX = Math.ceil((-this.state.camera.x + this.canvas.width * 2) / gridSize) * gridSize;
+                const endY = Math.ceil((-this.state.camera.y + this.canvas.height * 2) / gridSize) * gridSize;
+                
+                for (let x = startX; x < endX; x += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, startY);
+                    this.ctx.lineTo(x, endY);
+                    this.ctx.stroke();
+                }
+                
+                for (let y = startY; y < endY; y += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(startX, y);
+                    this.ctx.lineTo(endX, y);
+                    this.ctx.stroke();
+                }
+            }
+            
+            drawBlocks() {
+                this.state.blocks.forEach(block => {
+                    const size = 20;
+                    
+                    if (block.revealed) {
+                        // Draw revealed block
+                        this.ctx.fillStyle = block.type === 'power' ? '#9b59b6' : '#e74c3c';
+                        this.ctx.fillRect(block.x - size/2, block.y - size/2, size, size);
+                        
+                        // Draw symbol
+                        this.ctx.fillStyle = 'white';
+                        this.ctx.font = '14px Arial';
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText(
+                            block.type === 'power' ? '⚡' : '💀',
+                            block.x,
+                            block.y
+                        );
+                    } else {
+                        // Draw hidden block
+                        this.ctx.fillStyle = '#2c3e50';
+                        this.ctx.fillRect(block.x - size/2, block.y - size/2, size, size);
+                        
+                        // Draw question mark
+                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                        this.ctx.font = '12px Arial';
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText('?', block.x, block.y);
+                        
+                        // Draw outline
+                        this.ctx.strokeStyle = '#3498db';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeRect(block.x - size/2, block.y - size/2, size, size);
+                    }
+                });
+            }
+            
+            drawPlayer() {
+                const size = 30;
+                
+                // Draw player body
+                this.ctx.fillStyle = `rgba(52, 152, 219, ${this.state.player.health / 100})`;
+                this.ctx.beginPath();
+                this.ctx.arc(this.state.player.x, this.state.player.y, size/2, 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // Draw player outline
+                this.ctx.strokeStyle = '#3498db';
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.arc(this.state.player.x, this.state.player.y, size/2, 0, Math.PI * 2);
+                this.ctx.stroke();
+                
+                // Draw power ring
+                this.ctx.strokeStyle = '#9b59b6';
+                this.ctx.lineWidth = 4;
+                this.ctx.beginPath();
+                this.ctx.arc(
+                    this.state.player.x,
+                    this.state.player.y,
+                    size/2 + 5,
+                    0,
+                    (Math.PI * 2 * this.state.player.power) / 100
+                );
+                this.ctx.stroke();
+                
+                // Draw player indicator
+                this.ctx.fillStyle = 'white';
+                this.ctx.font = '16px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText('P', this.state.player.x, this.state.player.y);
+            }
+            
+            drawParticles() {
+                this.particles.forEach(p => {
+                    this.ctx.globalAlpha = p.life;
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                    this.ctx.fill();
+                });
+                this.ctx.globalAlpha = 1;
+            }
+            
+            drawUI() {
+                // Draw health bar
+                const barWidth = 200;
+                const barHeight = 20;
+                const barX = 20;
+                const barY = this.canvas.height - 40;
+                
+                // Background
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                this.ctx.fillRect(barX, barY, barWidth, barHeight);
+                
+                // Health fill
+                const healthWidth = (this.state.player.health / 100) * barWidth;
+                this.ctx.fillStyle = this.state.player.health > 50 ? '#2ecc71' : 
+                                   this.state.player.health > 25 ? '#f39c12' : '#e74c3c';
+                this.ctx.fillRect(barX, barY, healthWidth, barHeight);
+                
+                // Health text
+                this.ctx.fillStyle = 'white';
+                this.ctx.font = '14px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(
+                    `HEALTH: ${Math.round(this.state.player.health)}%`,
+                    barX + barWidth/2,
+                    barY + barHeight/2
+                );
+                
+                // Power text
+                this.ctx.fillStyle = '#9b59b6';
+                this.ctx.font = '16px Arial';
+                this.ctx.textAlign = 'right';
+                this.ctx.fillText(
+                    `POWER: ${Math.round(this.state.player.power)}%`,
+                    this.canvas.width - 20,
+                    barY + barHeight/2
+                );
+            }
+            
+            // UI updates
+            updateUI() {
+                // Update stats
+                document.getElementById('health').textContent = Math.round(this.state.player.health);
+                document.getElementById('power').textContent = Math.round(this.state.player.power) + '%';
+                document.getElementById('pieces').textContent = this.state.player.pieces + '%';
+                document.getElementById('wins').textContent = this.state.player.wins;
+                document.getElementById('found').textContent = `${this.state.revealed}/40`;
+                
+                // Update blocks grid
+                const grid = document.getElementById('blocksGrid');
+                grid.innerHTML = '';
+                
+                this.state.blocks.forEach((block, i) => {
+                    const div = document.createElement('div');
+                    div.className = `block ${block.revealed ? 'revealed' : 'hidden'} ${block.type}`;
+                    div.dataset.id = i;
+                    div.title = `Block ${i+1}`;
+                    
+                    if (block.revealed) {
+                        div.textContent = block.type === 'power' ? '⚡' : '💀';
+                    } else {
+                        div.textContent = '?';
+                    }
+                    
+                    grid.appendChild(div);
+                });
+            }
+            
+            addMessage(text, type) {
+                const msg = document.createElement('div');
+                msg.className = `message ${type}`;
+                msg.textContent = text;
+                
+                const list = document.getElementById('messageList');
+                list.appendChild(msg);
+                
+                // Limit to 5 messages
+                while (list.children.length > 5) {
+                    list.removeChild(list.firstChild);
+                }
+                
+                // Auto scroll to bottom
+                list.scrollTop = list.scrollHeight;
+            }
+            
+            playSound(type) {
+                // Simple sound using Web Audio API
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    let frequency = 440;
+                    let duration = 0.1;
+                    
+                    switch(type) {
+                        case 'win':
+                            frequency = 880;
+                            duration = 0.3;
+                            break;
+                        case 'damage':
+                            frequency = 220;
+                            duration = 0.2;
+                            break;
+                        case 'power':
+                            frequency = 660;
+                            duration = 0.4;
+                            break;
+                    }
+                    
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // Game loop
+            gameLoop() {
+                // Update
+                if (this.state.active) {
+                    this.updatePlayer();
+                }
+                this.updateParticles();
+                
+                // Draw
+                this.draw();
+                
+                // Continue loop
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+        
+        // Start game immediately
+        window.game = new Game();
+    </script>
+</body>
+</html>
