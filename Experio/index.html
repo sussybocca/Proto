@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exprio | Immersive Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: #0a0a14;
+            color: #e0e0ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            cursor: none;
+        }
+        
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6c5ce7;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            mix-blend-mode: difference;
+        }
+        
+        .cursor-dot {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background-color: #6c5ce7;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.05s ease;
+        }
+        
+        /* Header */
+        header {
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 20, 0.9);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: #b0b0ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+        
+        nav a:hover {
+            color: #6c5ce7;
+            background: rgba(108, 92, 231, 0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 5%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #6c5ce7, #a29bfe, #fd79a8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            color: #b0b0ff;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.4);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            background: rgba(15, 15, 25, 0.8);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            background: linear-gradient(to right, #6c5ce7, #a29bfe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        .feature-card {
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(108, 92, 231, 0.2);
+            border-color: rgba(108, 92, 231, 0.5);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #6c5ce7;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #e0e0ff;
+        }
+        
+        .feature-card p {
+            color: #b0b0ff;
+            line-height: 1.6;
+        }
+        
+        /* Avatar Section */
+        .avatar-section {
+            padding: 6rem 5%;
+            text-align: center;
+        }
+        
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .avatar-display {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #6c5ce7, #fd79a8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.3);
+        }
+        
+        .avatar {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            color: #6c5ce7;
+            z-index: 2;
+        }
+        
+        .avatar-controls {
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+        
+        .control-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #b0b0ff;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(108, 92, 231, 0.2);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #6c5ce7;
+            cursor: pointer;
+        }
+        
+        /* Animations Panel */
+        .animations-panel {
+            padding: 6rem 5%;
+            background: rgba(15, 15, 25, 0.8);
+        }
+        
+        .animations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .animation-card {
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            cursor: pointer;
+        }
+        
+        .animation-card:hover {
+            background: rgba(108, 92, 231, 0.1);
+            border-color: #6c5ce7;
+        }
+        
+        .animation-card.active {
+            background: rgba(108, 92, 231, 0.2);
+            border-color: #6c5ce7;
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+        }
+        
+        .animation-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #6c5ce7;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 3rem 5%;
+            text-align: center;
+            background: rgba(10, 10, 20, 0.9);
+            border-top: 1px solid rgba(108, 92, 231, 0.2);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .social-links a {
+            color: #b0b0ff;
+            font-size: 1.5rem;
+            transition: color 0.3s, transform 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: #6c5ce7;
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            color: #8888cc;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Background Elements */
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.1), transparent);
+            z-index: -1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .avatar-container {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+        }
+        
+        /* Animation Classes */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .spin {
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(108, 92, 231, 0.5); }
+            to { box-shadow: 0 0 25px rgba(108, 92, 231, 0.8); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="logo">EXPR.IO</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#avatar">Avatar</a></li>
+                <li><a href="#animations">Animations</a></li>
+                <li><a href="#control">Control Panel</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="bg-element" style="width: 500px; height: 500px; top: -200px; right: -100px;"></div>
+        <div class="bg-element" style="width: 300px; height: 300px; bottom: -100px; left: -50px;"></div>
+        
+        <h1>Welcome to <span class="pulse">Exprio</span></h1>
+        <p>Take full control of your digital experience. Customize every animation, effect, cursor, and avatar. Immerse yourself in the most interactive web environment ever created.</p>
+        <button class="cta-button float">Begin Your Experience</button>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Unlimited Customization</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <h3>Dynamic Animations</h3>
+                <p>Control every movement on the page with our powerful animation engine. Create custom transitions, effects, and motion paths.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mouse-pointer"></i>
+                </div>
+                <h3>Custom Cursors</h3>
+                <p>Replace the standard pointer with animated, interactive cursors that respond to page elements and user actions.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <h3>Personal Avatars</h3>
+                <p>Create and customize a digital representation of yourself that interacts with the website environment in real-time.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-vr-cardboard"></i>
+                </div>
+                <h3>Immersive Experience</h3>
+                <p>Feel the website come alive with parallax scrolling, particle effects, sound integration, and interactive 3D elements.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Avatar Section -->
+    <section class="avatar-section" id="avatar">
+        <h2 class="section-title">Customize Your Avatar</h2>
+        <div class="avatar-container">
+            <div class="avatar-display">
+                <div class="avatar" id="avatarDisplay">
+                    <i class="fas fa-robot"></i>
+                </div>
+            </div>
+            
+            <div class="avatar-controls">
+                <h3 style="margin-bottom: 1.5rem; color: #e0e0ff;">Avatar Controls</h3>
+                <div class="control-group">
+                    <label for="sizeSlider">Avatar Size</label>
+                    <input type="range" min="100" max="300" value="180" class="slider" id="sizeSlider">
+                </div>
+                
+                <div class="control-group">
+                    <label for="colorSlider">Color Theme</label>
+                    <input type="range" min="1" max="5" value="1" class="slider" id="colorSlider">
+                </div>
+                
+                <div class="control-group">
+                    <label for="animationSelect">Animation Style</label>
+                    <select id="animationSelect" style="width: 100%; padding: 0.8rem; background: rgba(20, 20, 40, 0.8); color: #e0e0ff; border: 1px solid rgba(108, 92, 231, 0.5); border-radius: 10px;">
+                        <option value="none">None</option>
+                        <option value="float">Float</option>
+                        <option value="pulse">Pulse</option>
+                        <option value="spin">Spin</option>
+                        <option value="glow">Glow</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Animations Panel -->
+    <section class="animations-panel" id="animations">
+        <h2 class="section-title">Control Animations</h2>
+        <div class="animations-grid">
+            <div class="animation-card active" data-animation="float">
+                <div class="animation-icon">
+                    <i class="fas fa-feather-alt"></i>
+                </div>
+                <h3>Float Effect</h3>
+                <p>Gentle floating motion for elements</p>
+            </div>
+            
+            <div class="animation-card" data-animation="pulse">
+                <div class="animation-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h3>Pulse Effect</h3>
+                <p>Rhythmic scaling animation</p>
+            </div>
+            
+            <div class="animation-card" data-animation="spin">
+                <div class="animation-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Spin Effect</h3>
+                <p>Continuous rotation animation</p>
+            </div>
+            
+            <div class="animation-card" data-animation="glow">
+                <div class="animation-icon">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <h3>Glow Effect</h3>
+                <p>Pulsating glow effect</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="logo" style="font-size: 1.8rem;">EXPR.IO</div>
+        <p style="max-width: 600px; margin: 1rem auto; color: #b0b0ff;">The ultimate platform for immersive web experiences. Control everything, customize anything.</p>
+        
+        <div class="social-links">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-discord"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        
+        <p class="copyright">© 2023 Exprio. All rights reserved. The future of web interaction is here.</p>
+    </footer>
+    
+    <script>
+        // Custom Cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            // Dot follows with a slight delay
+            setTimeout(() => {
+                cursorDot.style.left = e.clientX + 'px';
+                cursorDot.style.top = e.clientY + 'px';
+            }, 50);
+        });
+        
+        // Interactive cursor effects
+        document.querySelectorAll('a, button, .animation-card').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(1.8)';
+                cursor.style.borderColor = '#fd79a8';
+                cursorDot.style.transform = 'scale(0.5)';
+                cursorDot.style.backgroundColor = '#fd79a8';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+                cursor.style.borderColor = '#6c5ce7';
+                cursorDot.style.transform = 'scale(1)';
+                cursorDot.style.backgroundColor = '#6c5ce7';
+            });
+        });
+        
+        // Avatar Controls
+        const sizeSlider = document.getElementById('sizeSlider');
+        const colorSlider = document.getElementById('colorSlider');
+        const animationSelect = document.getElementById('animationSelect');
+        const avatarDisplay = document.getElementById('avatarDisplay');
+        
+        // Color themes for avatar
+        const colorThemes = [
+            { primary: '#6c5ce7', icon: 'fa-robot' },
+            { primary: '#fd79a8', icon: 'fa-user-astronaut' },
+            { primary: '#00cec9', icon: 'fa-cat' },
+            { primary: '#fdcb6e', icon: 'fa-dragon' },
+            { primary: '#55efc4', icon: 'fa-gamepad' }
+        ];
+        
+        sizeSlider.addEventListener('input', () => {
+            const size = sizeSlider.value;
+            avatarDisplay.style.width = `${size}px`;
+            avatarDisplay.style.height = `${size}px`;
+            avatarDisplay.style.fontSize = `${size/2}px`;
+        });
+        
+        colorSlider.addEventListener('input', () => {
+            const themeIndex = parseInt(colorSlider.value) - 1;
+            const theme = colorThemes[themeIndex];
+            
+            avatarDisplay.style.color = theme.primary;
+            avatarDisplay.innerHTML = `<i class="fas ${theme.icon}"></i>`;
+            
+            // Update avatar container gradient
+            const avatarContainer = document.querySelector('.avatar-display');
+            avatarContainer.style.background = `linear-gradient(45deg, ${theme.primary}, #a29bfe)`;
+        });
+        
+        animationSelect.addEventListener('change', () => {
+            // Remove all animation classes
+            avatarDisplay.classList.remove('float', 'pulse', 'spin', 'glow');
+            
+            // Add selected animation
+            const selectedAnimation = animationSelect.value;
+            if (selectedAnimation !== 'none') {
+                avatarDisplay.classList.add(selectedAnimation);
+            }
+        });
+        
+        // Animation Controls
+        const animationCards = document.querySelectorAll('.animation-card');
+        const ctaButton = document.querySelector('.cta-button');
+        
+        animationCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove active class from all cards
+                animationCards.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked card
+                card.classList.add('active');
+                
+                // Get animation type
+                const animationType = card.getAttribute('data-animation');
+                
+                // Remove all animations from CTA button
+                ctaButton.classList.remove('float', 'pulse', 'spin', 'glow');
+                
+                // Apply selected animation to CTA button
+                if (animationType) {
+                    ctaButton.classList.add(animationType);
+                }
+            });
+        });
+        
+        // CTA Button Interaction
+        ctaButton.addEventListener('click', () => {
+            // Pulse effect on click
+            ctaButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                ctaButton.style.transform = '';
+            }, 200);
+            
+            // Show a message
+            alert('Welcome to Exprio! Your immersive experience begins now. Customize every element to your liking.');
+        });
+        
+        // Background elements animation
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            
+            const bgElements = document.querySelectorAll('.bg-element');
+            bgElements.forEach((el, index) => {
+                const speed = index === 0 ? 0.05 : 0.03;
+                el.style.transform = `translate(${moveX * speed * 10}px, ${moveY * speed * 10}px)`;
+            });
+        });
+        
+        // Initialize with some random background elements
+        function createBackgroundElements() {
+            const container = document.body;
+            
+            for (let i = 0; i < 8; i++) {
+                const element = document.createElement('div');
+                element.classList.add('bg-element');
+                
+                const size = Math.random() * 100 + 50;
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.left = `${x}vw`;
+                element.style.top = `${y}vh`;
+                element.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                // Random animation
+                if (Math.random() > 0.5) {
+                    element.style.animation = `float ${Math.random() * 10 + 10}s infinite ease-in-out`;
+                }
+                
+                container.appendChild(element);
+            }
+        }
+        
+        // Create background elements on load
+        window.addEventListener('load', createBackgroundElements);
+    </script>
+</body>
+</html>
